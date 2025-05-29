@@ -35,7 +35,7 @@ const Support: React.FC = () => {
           </div>
         </Card>
 
-        <Card className="h-[calc(100vh-12rem)] overflow-hidden p-2 md:p-4">
+        <Card className="h-[calc(100vh-12rem)] overflow-hidden p-2 md:p-4 relative">
           <div className="p-0 md:p-4 border-b border-neutral-800">
             <h2 className="text-lg font-semibold">
               {selectedTicket && tickets.length > 1

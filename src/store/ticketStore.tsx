@@ -22,6 +22,7 @@ interface TicketMessage {
   message: string;
   is_admin: boolean;
   created_at: string;
+  image_url?: string;
 }
 
 interface TicketCategory {
@@ -45,7 +46,8 @@ interface TicketStore {
   sendMessage: (
     ticketId: string,
     message: string,
-    isAdmin?: boolean
+    isAdmin?: boolean,
+    imageUrl?: string
   ) => Promise<void>;
   selectTicket: (ticket: Ticket | null) => void;
   resetTicket: () => void;
@@ -163,7 +165,12 @@ export const useTicketStore = create<TicketStore>()(
         }
       },
 
-      sendMessage: async (ticketId, message, isAdmin) => {
+      sendMessage: async (
+        ticketId,
+        message,
+        isAdmin = false,
+        imageUrl = ""
+      ) => {
         set({ loading: true, error: null });
         try {
           const { data, error } = await supabase
@@ -174,6 +181,7 @@ export const useTicketStore = create<TicketStore>()(
                 message,
                 sender_id: (await supabase.auth.getUser()).data.user?.id,
                 is_admin: isAdmin ?? false,
+                image_url: imageUrl,
               },
             ])
             .select()

@@ -35,9 +35,8 @@ const Tickets: React.FC = () => {
     setIsChatOpen(true);
   };
 
-  const handleReplySubmit = (message: string) => {
-    sendMessage(activeTicket.id, message, true);
-    // Add your API logic here
+  const handleReplySubmit = (message: string, imageUrl?: string) => {
+    sendMessage(activeTicket.id, message, true, imageUrl);
   };
 
   const filteredTickets = tickets.filter((ticket) => {
@@ -106,22 +105,22 @@ const Tickets: React.FC = () => {
 
       <Card className="md:p-6 p-2">
         <div className="overflow-x-auto">
-          <table className="w-full  min-w-[720px]">
+          <table className="w-full min-w-[720px]">
             <thead>
               <tr className="text-left border-b border-neutral-800">
-                <th className="px-2md:px-6 py-3 text-sm font-medium text-neutral-400">
+                <th className="px-2 md:px-6 py-3 text-sm font-medium text-neutral-400">
                   Ticket
                 </th>
-                <th className="px-2md:px-6 py-3 text-sm font-medium text-neutral-400">
+                <th className="px-2 md:px-6 py-3 text-sm font-medium text-neutral-400">
                   Status
                 </th>
-                <th className="px-2md:px-6 py-3 text-sm font-medium text-neutral-400">
+                <th className="px-2 md:px-6 py-3 text-sm font-medium text-neutral-400">
                   Priority
                 </th>
-                <th className="px-2md:px-6 py-3 text-sm font-medium text-neutral-400">
+                <th className="px-2 md:px-6 py-3 text-sm font-medium text-neutral-400">
                   Created
                 </th>
-                <th className="px-2md:px-6 py-3 text-sm font-medium text-neutral-400">
+                <th className="px-2 md:px-6 py-3 text-sm font-medium text-neutral-400">
                   Actions
                 </th>
               </tr>
@@ -133,7 +132,7 @@ const Tickets: React.FC = () => {
                     key={ticket.id}
                     className="border-b border-neutral-800 hover:bg-neutral-800/30"
                   >
-                    <td className="px-2md:px-6 py-4">
+                    <td className="px-2 md:px-6 py-4">
                       <div>
                         <p className="font-medium">{ticket.subject}</p>
                         <p className="text-sm text-neutral-400">
@@ -141,7 +140,7 @@ const Tickets: React.FC = () => {
                         </p>
                       </div>
                     </td>
-                    <td className="px-2md:px-6 py-4">
+                    <td className="px-2 md:px-6 py-4">
                       <select
                         className={`px-2 py-1 rounded-full text-xs ${
                           ticket.status === "open"
@@ -161,7 +160,7 @@ const Tickets: React.FC = () => {
                         <option value="closed">Closed</option>
                       </select>
                     </td>
-                    <td className="px-2md:px-6 py-4">
+                    <td className="px-2 md:px-6 py-4">
                       <span
                         className={`px-2 py-1 text-xs rounded-full ${getPriorityClass(
                           ticket.priority
@@ -170,7 +169,7 @@ const Tickets: React.FC = () => {
                         {ticket.priority}
                       </span>
                     </td>
-                    <td className="px-2md:px-6 py-4">
+                    <td className="px-2 md:px-6 py-4">
                       <span className="text-sm text-neutral-400">
                         {formatDistance(
                           new Date(ticket.created_at),
@@ -179,7 +178,7 @@ const Tickets: React.FC = () => {
                         )}
                       </span>
                     </td>
-                    <td className="px-2md:px-6 py-4 flex gap-2">
+                    <td className="px-2 md:px-6 py-4 flex gap-2">
                       <Button
                         variant="outline"
                         size="sm"
