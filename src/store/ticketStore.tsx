@@ -79,7 +79,7 @@ export const useTicketStore = create<TicketStore>()(
         set({ loading: true, error: null });
         try {
           const { data, error } = await supabase
-            .from("tickets")
+            .from("active_user_tickets")
             .select("*")
             .order("created_at", { ascending: false });
 
