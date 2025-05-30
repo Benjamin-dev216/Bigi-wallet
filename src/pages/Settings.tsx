@@ -14,6 +14,7 @@ import Button from "../components/ui/Button";
 import { supabase, useAuthStore } from "../store/authStore";
 import toast, { Toaster } from "react-hot-toast";
 import { MoonLoader } from "react-spinners";
+import { adminSupabase } from "../store/adminStore";
 
 export const TotpQr = ({ uri }: { uri: string }) => {
   const [qrSvg, setQrSvg] = useState<string>("");
@@ -99,8 +100,15 @@ const Settings: React.FC = () => {
         if (existingTotp.status === "unverified") {
           await supabase.auth.mfa.unenroll({ factorId: existingTotp.id });
         } else {
-          toast("TOTP 2FA is already enabled.");
-          return;
+          const user = supabase.auth.getUser(); // get user id
+          const { data: userData } = await user;
+          const userId = userData?.user?.id;
+
+          const { error } = await adminSupabase.auth.admin.mfa.deleteFactor({
+            id: existingTotp.id,
+            userId: userId || "",
+          });
+          if (error) throw error;
         }
       }
 

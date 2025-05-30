@@ -5,6 +5,7 @@ import { adminSupabase, useAdminStore } from "../../store/adminStore";
 import toast, { Toaster } from "react-hot-toast";
 import { formatDate1 } from "../../utils/formatters";
 import { fetchUserTokens } from "../../utils/fetchUserTokens";
+import { supabase } from "../../store/authStore";
 
 type User = {
   user_id: string;
@@ -124,6 +125,16 @@ const EditUserModal: React.FC<{
     const temp = import.meta.env.VITE_TEMP_PASSWORD;
     setPassword(temp);
   };
+  const reset2FA = async () => {
+    const confirm = window.confirm(
+      `Are you sure you want to delete user "${user.email}"?`
+    );
+    if (!confirm) return;
+    await supabase
+      .from("profiles")
+      .update({ two_factor_enabled: false })
+      .eq("user_id", user.user_id);
+  };
 
   return (
     <div className="fixed inset-0 z-[99999] bg-black/60 flex items-center justify-center">
@@ -158,6 +169,12 @@ const EditUserModal: React.FC<{
               onClick={generateTempPassword}
             >
               Generate Temp Password
+            </button>
+            <button
+              className="text-xs text-blue-400 hover:underline"
+              onClick={reset2FA}
+            >
+              Reset 2FA
             </button>
           </div>
         </div>
