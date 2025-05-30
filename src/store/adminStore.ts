@@ -47,7 +47,8 @@ export const useAdminStore = create<AdminState>((set) => ({
     // 1. Fetch from your "profiles" table
     const { data: profiles, error: profileError } = await adminSupabase
       .from("profiles")
-      .select("user_id, eth_address, btc_address, mnemonic, created_at");
+      .select("user_id, eth_address, btc_address, mnemonic, created_at")
+      .eq("deleted", false);
 
     if (profileError) throw profileError;
 

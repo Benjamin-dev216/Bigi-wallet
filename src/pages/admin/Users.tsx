@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect, useRef } from "react";
-import { Search, Eye, EyeOff, Edit, View } from "lucide-react";
+import { Search, Eye, EyeOff, Edit, View, Trash2 } from "lucide-react";
 import Card from "../../components/ui/Card";
 import { adminSupabase, useAdminStore } from "../../store/adminStore";
 import toast, { Toaster } from "react-hot-toast";
@@ -43,6 +43,17 @@ const UserView: React.FC<{ onView: () => void }> = ({ onView }) => (
       <View size={18} className="text-primary" />
     </button>
     <div>View</div>
+  </div>
+);
+const UserDelete: React.FC<{ onDelete: () => void }> = ({ onDelete }) => (
+  <div className="flex items-center space-x-2 cursor-pointer">
+    <button
+      onClick={onDelete}
+      className="p-1 hover:bg-neutral-700 rounded-lg transition-colors"
+    >
+      <Trash2 size={18} className="text-primary" />
+    </button>
+    <div>Delete</div>
   </div>
 );
 export const ProtectedMnemonic: React.FC<{ mnemonic: string }> = ({
@@ -174,7 +185,8 @@ const UserRow: React.FC<{
   user: User;
   onEdit: () => void;
   onView: () => void;
-}> = ({ user, onEdit, onView }) => (
+  onDelete: () => void;
+}> = ({ user, onEdit, onView, onDelete }) => (
   <tr className="border-b border-neutral-800 hover:bg-neutral-800/30">
     <td className="px-1 sm:px-2 py-3">
       <p className="font-medium">{user.username}</p>
@@ -190,6 +202,9 @@ const UserRow: React.FC<{
     </td>
     <td className="px-1 sm:px-2 py-3">
       <UserView onView={onView} />
+    </td>
+    <td className="px-1 sm:px-2 py-3">
+      <UserDelete onDelete={onDelete} />
     </td>
   </tr>
 );
@@ -272,6 +287,32 @@ const Users: React.FC = () => {
       console.error("Unexpected error:", error);
     }
   };
+  const handleDeleteUser = async (user: User) => {
+    const confirm = window.confirm(
+      `Are you sure you want to delete user "${user.email}"?`
+    );
+    if (!confirm) return;
+
+    try {
+      // Step 2: Optionally delete the user from your own "users" table if needed
+      const { error: dbError } = await adminSupabase
+        .from("profiles")
+        .update({ deleted: true })
+        .eq("user_id", user.user_id);
+
+      if (dbError) {
+        toast.error("Failed to delete user from database: " + dbError.message);
+        return;
+      }
+
+      // Refresh the user list
+      await fetchUsers();
+      toast.success("User deleted successfully.");
+    } catch (err) {
+      toast.error("An unexpected error occurred.");
+      console.error(err);
+    }
+  };
 
   useEffect(() => {
     fetchUsers();
@@ -329,6 +370,9 @@ const Users: React.FC = () => {
                 <th className="px-2 sm:px-3 py-3 text-xs font-medium text-neutral-400">
                   View
                 </th>
+                <th className="px-2 sm:px-3 py-3 text-xs font-medium text-neutral-400">
+                  Delete
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -338,6 +382,7 @@ const Users: React.FC = () => {
                   user={user}
                   onEdit={() => setEditingUser(user)}
                   onView={() => setViewingUser(user)}
+                  onDelete={() => handleDeleteUser(user)}
                 />
               ))}
               {filteredUsers.length === 0 && (

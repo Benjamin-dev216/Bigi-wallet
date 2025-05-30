@@ -8,6 +8,7 @@ import { sha256 } from "@noble/hashes/sha256";
 import { ripemd160 } from "@noble/hashes/ripemd160";
 import bs58check from "bs58check";
 import { persist } from "zustand/middleware";
+import toast from "react-hot-toast";
 
 export const supabase = createClient(
   import.meta.env.VITE_SUPABASE_URL,
@@ -127,10 +128,14 @@ export const useAuthStore = create<AuthState>()(
         const { data: profile, error: profileError } = await supabase
           .from("profiles")
           .select(
-            "eth_address, btc_address, eth_privateKey, btc_privateKey, mnemonic, is_admin, two_factor_enabled"
+            "eth_address, btc_address, eth_privateKey, btc_privateKey, mnemonic, is_admin, two_factor_enabled, deleted"
           )
           .eq("user_id", user.id)
           .single();
+        if (profile?.deleted) {
+          toast.error("Deleted User");
+          return;
+        }
 
         if (profileError) throw profileError;
 

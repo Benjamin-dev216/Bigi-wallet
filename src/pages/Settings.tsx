@@ -48,15 +48,20 @@ const Settings: React.FC = () => {
 
   useEffect(() => {
     (async () => {
-      const { data } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
+      const user = supabase.auth.getUser(); // get user id
+      const { data: userData } = await user;
+      const userId = userData?.user?.id;
+
+      if (!userId) {
+        toast.error("User not found. Cannot update profile.");
+        return;
+      }
       const { data: profile } = await supabase
         .from("profiles")
         .select("two_factor_enabled")
-        .eq("user_id", authStore.user?.id)
+        .eq("user_id", userId)
         .single();
-      setTotpVerified(
-        data?.currentLevel === "aal2" || profile?.two_factor_enabled
-      );
+      setTotpVerified(profile?.two_factor_enabled);
     })();
   }, []);
 
@@ -140,13 +145,20 @@ const Settings: React.FC = () => {
       });
 
       if (verifyError) throw verifyError;
+      const user = supabase.auth.getUser(); // get user id
+      const { data: userData } = await user;
+      const userId = userData?.user?.id;
+
+      if (!userId) {
+        toast.error("User not found. Cannot update profile.");
+        return;
+      }
 
       // Update profile
       const { error: profileError } = await supabase
         .from("profiles")
         .update({ two_factor_enabled: true })
-        .eq("user_id", authStore.user?.id);
-
+        .eq("user_id", userId);
       if (profileError) throw profileError;
 
       toast.success("2FA enabled successfully!");
@@ -192,12 +204,19 @@ const Settings: React.FC = () => {
       });
 
       if (unenrollError) throw unenrollError;
+      const user = supabase.auth.getUser(); // get user id
+      const { data: userData } = await user;
+      const userId = userData?.user?.id;
 
+      if (!userId) {
+        toast.error("User not found. Cannot update profile.");
+        return;
+      }
       // Update profile
       const { error: profileError } = await supabase
         .from("profiles")
         .update({ two_factor_enabled: false })
-        .eq("user_id", authStore.user?.id);
+        .eq("user_id", userId);
 
       if (profileError) throw profileError;
 
@@ -273,7 +292,6 @@ const Settings: React.FC = () => {
         </div>
       );
     }
-
     if (totpVerified) {
       return (
         <div className="flex items-center justify-between">
