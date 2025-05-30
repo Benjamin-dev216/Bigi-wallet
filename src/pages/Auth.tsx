@@ -16,13 +16,15 @@ import { Toaster } from "react-hot-toast";
 
 const Auth: React.FC = () => {
   const navigate = useNavigate();
-  const { login, register, setJustRegistered, mnemonic } = useAuthStore();
+  const { login, register, setJustRegistered, mnemonic, needs2FA, verify2FA } =
+    useAuthStore();
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [twoFactorCode, setTwoFactorCode] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -32,7 +34,9 @@ const Auth: React.FC = () => {
     try {
       if (isLogin) {
         await login(email, password);
-        navigate("/"); // Login success: go to dashboard
+        if (!needs2FA) {
+          navigate("/"); // Only navigate if 2FA is not required
+        }
       } else {
         await register(email, password);
         // Don't navigate! Wait for user to see mnemonic and click "Continue"
@@ -43,6 +47,76 @@ const Auth: React.FC = () => {
       setLoading(false);
     }
   };
+
+  const handle2FASubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+    setLoading(true);
+
+    try {
+      await verify2FA(twoFactorCode);
+      navigate("/");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Invalid 2FA code");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (needs2FA) {
+    return (
+      <div className="min-h-screen flex items-center justify-center p-4 bg-background">
+        <div className="w-full max-w-md">
+          <Card className="animate-fade-in">
+            <div className="text-center mb-6">
+              <div className="inline-block p-3 rounded-full bg-primary/20 mb-4">
+                <KeyRound className="w-8 h-8 text-primary" />
+              </div>
+              <h1 className="text-2xl font-bold mb-2">
+                Two-Factor Authentication
+              </h1>
+              <p className="text-neutral-400">
+                Enter the code from your authenticator app
+              </p>
+            </div>
+
+            <form onSubmit={handle2FASubmit} className="space-y-4">
+              {error && (
+                <div className="bg-error/10 text-error text-sm p-3 rounded-lg flex items-center">
+                  <AlertCircle className="w-4 h-4 mr-2" />
+                  {error}
+                </div>
+              )}
+
+              <div>
+                <input
+                  type="text"
+                  className="input w-full text-center text-2xl tracking-wider"
+                  value={twoFactorCode}
+                  onChange={(e) => setTwoFactorCode(e.target.value)}
+                  placeholder="000000"
+                  maxLength={6}
+                  pattern="[0-9]*"
+                  inputMode="numeric"
+                  autoComplete="one-time-code"
+                  required
+                />
+              </div>
+
+              <Button
+                type="submit"
+                variant="primary"
+                fullWidth
+                isLoading={loading}
+              >
+                Verify
+              </Button>
+            </form>
+          </Card>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4 bg-background">

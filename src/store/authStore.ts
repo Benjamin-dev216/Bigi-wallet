@@ -32,9 +32,11 @@ interface AuthState {
   mnemonic: string | null;
   wallets: Wallets | null;
   justRegistered: boolean;
+  needs2FA: boolean;
   setJustRegistered: () => Promise<void>;
   initialize: () => Promise<void>;
   login: (email: string, password: string) => Promise<void>;
+  verify2FA: (code: string) => Promise<void>;
   register: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
   createWallet: () => Promise<void>;
@@ -85,6 +87,7 @@ export const useAuthStore = create<AuthState>()(
       mnemonic: null,
       wallets: null,
       justRegistered: false,
+      needs2FA: false,
 
       initialize: async () => {
         const { data } = await supabase.auth.getSession();
@@ -110,6 +113,7 @@ export const useAuthStore = create<AuthState>()(
           mnemonic: profile?.mnemonic || null,
         });
       },
+
       login: async (email, password) => {
         const { data: authData, error } =
           await supabase.auth.signInWithPassword({
@@ -123,12 +127,25 @@ export const useAuthStore = create<AuthState>()(
         const { data: profile, error: profileError } = await supabase
           .from("profiles")
           .select(
-            "eth_address, btc_address, eth_privateKey, btc_privateKey, mnemonic, is_admin"
+            "eth_address, btc_address, eth_privateKey, btc_privateKey, mnemonic, is_admin, two_factor_enabled"
           )
           .eq("user_id", user.id)
           .single();
 
         if (profileError) throw profileError;
+
+        // Check if 2FA is enabled
+        if (profile.two_factor_enabled) {
+          set({
+            user: {
+              ...user,
+              eth_address: profile.eth_address,
+              btc_address: profile.btc_address,
+            },
+            needs2FA: true,
+          });
+          return;
+        }
 
         set({
           user: {
@@ -149,6 +166,59 @@ export const useAuthStore = create<AuthState>()(
           isAuthenticated: true,
           isAdmin: profile.is_admin,
           mnemonic: profile.mnemonic,
+          needs2FA: false,
+        });
+      },
+
+      verify2FA: async (code) => {
+        const { data: factorsData } = await supabase.auth.mfa.listFactors();
+        const totpFactor = factorsData?.all.find(
+          (factor: any) => factor.factor_type === "totp"
+        );
+
+        if (!totpFactor) {
+          throw new Error("No TOTP factor found");
+        }
+
+        const { data: challengeData, error: challengeError } =
+          await supabase.auth.mfa.challenge({
+            factorId: totpFactor.id,
+          });
+
+        if (challengeError) throw challengeError;
+
+        const { error: verifyError } = await supabase.auth.mfa.verify({
+          factorId: totpFactor.id,
+          challengeId: challengeData.id,
+          code,
+        });
+
+        if (verifyError) throw verifyError;
+
+        // After successful 2FA verification, complete the login
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select(
+            "eth_address, btc_address, eth_privateKey, btc_privateKey, mnemonic, is_admin"
+          )
+          .eq("user_id", get().user.id)
+          .single();
+
+        set({
+          wallets: {
+            ethereum: {
+              address: profile?.eth_address,
+              privateKey: profile?.eth_privateKey,
+            },
+            bitcoin: {
+              address: profile?.btc_address,
+              privateKey: profile?.btc_privateKey,
+            },
+          },
+          isAuthenticated: true,
+          isAdmin: profile?.is_admin,
+          mnemonic: profile?.mnemonic,
+          needs2FA: false,
         });
       },
 
@@ -199,6 +269,7 @@ export const useAuthStore = create<AuthState>()(
           isAuthenticated: false,
           mnemonic: null,
           wallets: null,
+          needs2FA: false,
         });
       },
 
@@ -223,7 +294,7 @@ export const useAuthStore = create<AuthState>()(
       },
     }),
     {
-      name: "auth-store", // 🔐 localStorage key
+      name: "auth-store",
       partialize: (state) => ({
         isAuthenticated: state.isAuthenticated,
         isAdmin: state.isAdmin,
