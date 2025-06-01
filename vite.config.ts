@@ -15,6 +15,9 @@ export default defineConfig({
       assert: "assert",
     },
   },
+  build: {
+    target: "esnext", // ← enable support for top-level await
+  },
   optimizeDeps: {
     include: ["buffer"], // ✅ Ensure Buffer is pre-bundled
     exclude: ["lucide-react"], // ✅ Your preference
