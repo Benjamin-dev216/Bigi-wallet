@@ -290,7 +290,7 @@ const Transactions: React.FC = () => {
                         isReceive ? "text-success" : "text-error"
                       }`}
                     >
-                      {isReceive ? "+" : "-"} {amount}
+                      {isReceive ? "+" : ""} {amount}
                     </p>
                     <div className="flex items-center text-xs text-neutral-400 float-right">
                       <span>{formatAddress(tx.counterAddress, 6, 6)}</span>

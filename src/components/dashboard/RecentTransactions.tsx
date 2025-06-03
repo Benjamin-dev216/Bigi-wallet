@@ -103,7 +103,7 @@ const RecentTransactions: React.FC = () => {
                       isReceive ? "text-success" : "text-error"
                     }`}
                   >
-                    {isReceive ? "+" : "-"}{" "}
+                    {isReceive ? "+" : ""}{" "}
                     {formatAmount(tx.amount, tx.symbol, tx.chain)}
                   </p>
                   <p className="text-xs text-neutral-400">

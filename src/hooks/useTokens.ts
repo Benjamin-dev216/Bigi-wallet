@@ -15,8 +15,9 @@ export const useTokens = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   const fetchTokenList = async () => {
-    const res = await fetch("https://tokens.uniswap.org");
+    const res = await fetch("https://ipfs.io/ipns/tokens.uniswap.org");
     const data = await res.json();
+
     return data.tokens; // Array of tokens with { address, symbol, name, decimals, chainId, logoURI }
   };
 
@@ -30,22 +31,21 @@ export const useTokens = () => {
 
         // Filter out tokens missing essential fields
         const filtered = tokens.filter(
-          (token: any) => token.name && token.symbol && token.address
+          (token: any) =>
+            token.name && token.symbol && token.address && token.chainId === 1
         );
+        const ethToken = {
+          name: "Ethereum",
+          symbol: "ETH",
+          address: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE", // Native ETH
+          decimals: 18,
+          balance: "",
+          logoURI: "/eth-logo.png", // Optional
+          isNative: true,
+        };
+        const withEth = [ethToken, ...filtered];
 
-        // Deduplicate by name + symbol, keeping the first occurrence
-        const seen = new Set<string>();
-        const uniqueTokens: any[] = [];
-
-        for (const token of filtered) {
-          const key = `${token.name.toLowerCase()}|${token.symbol.toLowerCase()}`;
-          if (!seen.has(key)) {
-            seen.add(key);
-            uniqueTokens.push(token);
-          }
-        }
-
-        setTokens(uniqueTokens);
+        setTokens(withEth);
       } catch (err) {
         console.error("Failed to fetch tokens:", err);
       } finally {

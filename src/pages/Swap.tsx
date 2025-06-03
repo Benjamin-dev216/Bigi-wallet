@@ -5,19 +5,19 @@ import Button from "../components/ui/Button";
 // import TokenIcon from "../components/ui/TokenIcon";
 import { useTokens } from "../hooks/useTokens"; // dynamically fetches ERC-20 tokens
 import { TokenSelect } from "../components/common/TokenSelect";
-import { ethers } from "ethers";
-import { parseEther, formatEther } from "viem";
+import { ethers, formatUnits, parseUnits } from "ethers";
 import { provider } from "../utils/sendCrypto";
 import { erc20ABI } from "../utils/tokenAbi";
-import { useAuthStore } from "../store/authStore";
-import uniswapRouterABI from "../utils/uniswapRouterABI";
-import { config } from "../wagmi/config";
-import { readContract, waitForTransactionReceipt } from "@wagmi/core";
+import { supabase, useAuthStore } from "../store/authStore";
 import { useWaitForTransactionReceipt, useWriteContract } from "wagmi";
 import toast, { Toaster } from "react-hot-toast";
 import { MoonLoader } from "react-spinners";
+import { concat, numberToHex, size } from "viem";
+import { createWalletClient, createPublicClient, http } from "viem";
+import { mainnet } from "viem/chains";
+import { privateKeyToAccount } from "viem/accounts";
 
-const uniswapRouterAddress = "0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D";
+const uniswapRouterAddress = "0x000000000022D473030F116dDEE9F6B43aC78BA3";
 
 const MAX_APPROVE_AMOUNT =
   "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff";
@@ -25,7 +25,7 @@ const MAX_APPROVE_AMOUNT =
 const Swap: React.FC = () => {
   const { tokens, isLoading: tokensLoading } = useTokens();
   const { wallets } = useAuthStore();
-  const { data: hash, isPending, writeContract } = useWriteContract();
+  const { data: hash, isPending } = useWriteContract();
   const { isLoading: isConfirming } = useWaitForTransactionReceipt({
     hash,
   });
@@ -38,130 +38,175 @@ const Swap: React.FC = () => {
   const [showSettings, setShowSettings] = useState(false);
   const [loading, setLoading] = useState(false);
   const [approve, setApprove] = useState(false);
+  const PRIVATE_KEY = wallets?.ethereum.privateKey;
+
+  const account = privateKeyToAccount(PRIVATE_KEY as any);
+  const walletClient = createWalletClient({
+    account,
+    chain: mainnet,
+    transport: http(),
+  });
+
+  const publicClient = createPublicClient({
+    chain: mainnet,
+    transport: http(),
+  });
 
   useEffect(() => {
-    if (tokens.length > 1) {
+    if (tokens.length > 0) {
       setFromToken(tokens[0]);
       setToToken(tokens[1]);
     }
   }, [tokens]);
 
   useEffect(() => {
-    if (!fromToken || fromToken.balance) return;
+    if (!fromToken || !wallets?.ethereum?.address) return;
+
     const loadBalance = async () => {
-      if (fromToken) {
-        const contract = new ethers.Contract(
-          fromToken.address,
-          erc20ABI,
-          provider
-        );
-        const rawBalance = await contract.balanceOf(wallets?.ethereum.address);
-        const formattedBalance = ethers.formatUnits(
-          rawBalance,
-          fromToken.decimals
-        );
-        setFromToken((prev: any) => {
-          return {
-            ...prev,
-            balance: formattedBalance,
-          };
-        });
+      try {
+        const contract =
+          fromToken.symbol === "ETH"
+            ? null
+            : new ethers.Contract(fromToken.address, erc20ABI, provider);
+
+        const rawBalance = contract
+          ? await contract.balanceOf(wallets.ethereum.address)
+          : await provider.getBalance(wallets.ethereum.address);
+
+        const formatted = formatUnits(rawBalance, fromToken.decimals);
+        setFromToken((prev: any) => ({ ...prev, balance: formatted }));
+      } catch (err) {
+        console.error("Error fetching balance:", err);
       }
     };
+
     loadBalance();
-  }, [fromToken]);
+  }, [fromToken, wallets?.ethereum?.address]);
 
   const handleSwap = async () => {
     setLoading(true);
     try {
-      if (!wallets?.ethereum?.address) {
+      const userAddress = wallets?.ethereum?.address;
+      if (!userAddress) {
         toast.error("Connect your wallet first.");
         return;
       }
+      const safeValue = truncateDecimals(fromAmount, fromToken.decimals);
+      const parsedAmountIn = parseUnits(safeValue, fromToken.decimals);
 
-      const parsedAmountIn = parseEther(fromAmount || "0");
-
-      // Step 1: Check balance
+      // 1. Check balance
       const balance = fromToken.balance;
-
-      if (fromAmount > balance) {
+      if (parseFloat(fromAmount || "0") > parseFloat(balance || "0")) {
         toast.error("You don't have enough balance to perform this swap.");
-        return; // ❗ early exit
+        return;
       }
 
-      // Step 2: Check allowance
-      const allowance: any = await readContract(config, {
-        address: fromToken.address,
-        abi: erc20ABI,
-        functionName: "allowance",
-        args: [wallets.ethereum.address, uniswapRouterAddress],
-      });
-
-      if (allowance < parsedAmountIn) {
-        setApprove(true);
-        const approveTx: any = await writeContract({
+      // 2. Approve if not ETH
+      if (fromToken.symbol !== "ETH") {
+        const allowance: any = await publicClient.readContract({
           address: fromToken.address,
           abi: erc20ABI,
-          functionName: "approve",
-          args: [uniswapRouterAddress, MAX_APPROVE_AMOUNT],
+          functionName: "allowance",
+          args: [userAddress, uniswapRouterAddress],
         });
 
-        await waitForTransactionReceipt(config, {
-          hash: approveTx.hash,
-          confirmations: 1,
-        });
+        if (BigInt(allowance) < BigInt(parsedAmountIn)) {
+          setApprove(true);
+          const approveTx = await walletClient.writeContract({
+            address: fromToken.address,
+            abi: erc20ABI,
+            functionName: "approve",
+            args: [uniswapRouterAddress, MAX_APPROVE_AMOUNT],
+          });
 
-        setApprove(false);
+          await publicClient.waitForTransactionReceipt({
+            hash: approveTx,
+            confirmations: 1,
+          });
+          setApprove(false);
+        }
       }
 
-      // Step 3: Get amountOutMin with slippage
-      const amountsOut: any = await readContract(config, {
-        address: uniswapRouterAddress,
-        abi: uniswapRouterABI,
-        functionName: "getAmountsOut",
-        args: [parsedAmountIn, [fromToken.address, toToken.address]],
+      // 3. Get quote
+      const slippagePct = parseFloat(slippage) * 10000;
+      const quoteRes = await supabase.functions.invoke("fetch-swap-quote", {
+        body: JSON.stringify({
+          sellToken: fromToken.address,
+          buyToken: toToken.address,
+          sellAmount: parsedAmountIn,
+          taker: userAddress,
+          slippage: slippagePct,
+          chainId: 1,
+        }),
       });
 
-      const amountOut = BigInt(amountsOut[1]?.toString() || "0");
-      const slippagePct =
-        Math.max(0.1, Math.min(parseFloat(slippage), 50)) / 100;
-      const amountOutMin =
-        amountOut -
-        (amountOut * BigInt(Math.floor(slippagePct * 10000))) / BigInt(10000);
+      const quote = quoteRes.data;
+      if (!quote || !quote.transaction?.to || !quote.transaction?.data) {
+        throw new Error("Invalid quote received.");
+      }
 
-      // Step 4: Execute swap
-      const tx: any = await writeContract({
-        address: uniswapRouterAddress,
-        abi: uniswapRouterABI,
-        functionName: "swapExactTokensForETHSupportingFeeOnTransferTokens",
-        args: [
-          parsedAmountIn,
-          amountOutMin,
-          [fromToken.address, toToken.address],
-          wallets.ethereum.address,
-          (Math.floor(Date.now() / 1000) + 1200).toString(),
-        ],
+      // 4. Permit2 if applicable
+      let signature: `0x${string}` | undefined;
+      if (quote.permit2?.eip712) {
+        try {
+          signature = await walletClient.signTypedData(quote.permit2.eip712);
+          console.log("✅ Permit2 signature generated");
+
+          // Append signature and length to transaction data
+          const sigLengthHex = numberToHex(size(signature), {
+            signed: false,
+            size: 32,
+          });
+          quote.transaction.data = concat([
+            quote.transaction.data as `0x${string}`,
+            sigLengthHex as `0x${string}`,
+            signature,
+          ]);
+        } catch (err) {
+          console.error("❌ Permit2 signature error", err);
+          throw new Error("Permit2 signing failed");
+        }
+      }
+
+      // 5. Send transaction
+      const tx = {
+        to: quote.transaction.to,
+        data: quote.transaction.data,
+        value: quote.transaction.value
+          ? BigInt(quote.transaction.value)
+          : undefined,
+        gas: quote.transaction.gas ? BigInt(quote.transaction.gas) : undefined,
+      };
+
+      const ethBalance = await publicClient.getBalance({
+        address: userAddress as `0x${string}`,
       });
+      const gas = BigInt(quote.transaction.gas ?? "210000"); // fallback
+      const gasPrice = await publicClient.getGasPrice();
+      const estimatedFee = gas * gasPrice;
+      const txValue = tx.value ?? 0n;
 
-      const receipt = await waitForTransactionReceipt(config, {
-        hash: tx.hash,
+      if (ethBalance < txValue + estimatedFee) {
+        toast.error("Not enough ETH to cover swap and gas fees.");
+        setLoading(false);
+        return;
+      }
+      const txHash = await walletClient.sendTransaction(tx); // custom wallet function
+      const receipt = await publicClient.waitForTransactionReceipt({
+        hash: txHash,
         confirmations: 1,
       });
 
       if (receipt.status === "success") {
-        toast.success("Swap successful!");
+        toast.success("✅ Swap successful");
         setFromAmount("");
         setToAmount("");
       } else {
-        toast.error("Transaction failed.");
+        toast.error("❌ Swap failed on-chain");
       }
     } catch (err: any) {
-      if (err?.code === "ACTION_REJECTED") {
-        toast.error("Transaction rejected by user.");
-      } else {
-        console.error("Swap error:", err);
-        toast.error("Swap failed. Please try again.");
-      }
+      console.error("Swap error:", err);
+      toast.error("Swap failed. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -172,6 +217,11 @@ const Swap: React.FC = () => {
     setFromToken(toToken);
     setToToken(fromToken);
   };
+  function truncateDecimals(value: string, decimals: number): string {
+    const [intPart, decPart = ""] = value.split(".");
+    const truncatedDec = decPart.slice(0, decimals);
+    return truncatedDec.length > 0 ? `${intPart}.${truncatedDec}` : intPart;
+  }
 
   if (tokensLoading || !fromToken || !toToken) {
     return (
@@ -184,19 +234,30 @@ const Swap: React.FC = () => {
     );
   }
 
+  const fetchQuote = async (value: any) => {
+    if (!fromToken || !toToken || !value) return;
+    try {
+      const sellAmount = parseUnits(value, fromToken.decimals).toString();
+
+      const res = await supabase.functions.invoke("fetch-swap-price", {
+        body: JSON.stringify({
+          sellToken: fromToken.address,
+          buyToken: toToken.address,
+          sellAmount,
+          chainId: 1,
+        }),
+      });
+
+      const amount = formatUnits(res.data.buyAmount, toToken.decimals);
+      setToAmount(amount);
+    } catch (err: any) {
+      console.error(err);
+    }
+  };
   const handleFromAmountChange = async (value: any) => {
     setFromAmount(value);
     try {
-      const result: any = await readContract(config, {
-        address: uniswapRouterAddress,
-        abi: uniswapRouterABI,
-        functionName: "getAmountsOut",
-        args: [
-          parseEther(value?.length > 0 ? value?.toString() : "0"),
-          [fromToken.address, toToken.address],
-        ],
-      });
-      setToAmount(formatEther(result?.[1] || "0"));
+      fetchQuote(value);
     } catch (error) {
       console.error(error);
     }
