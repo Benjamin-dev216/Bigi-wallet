@@ -20,6 +20,7 @@ import { useSettingsStore } from "../store/settingsStore";
 import toast, { Toaster } from "react-hot-toast";
 import { MoonLoader } from "react-spinners";
 import { adminSupabase } from "../store/adminStore";
+import { useTranslation } from "react-i18next";
 
 export const TotpQr = ({ uri }: { uri: string }) => {
   const [qrSvg, setQrSvg] = useState<string>("");
@@ -38,6 +39,7 @@ export const TotpQr = ({ uri }: { uri: string }) => {
 };
 
 const Settings: React.FC = () => {
+  const { t, i18n } = useTranslation();
   const authStore = useAuthStore();
   const { currency, language, theme, setCurrency, setLanguage, setTheme } = useSettingsStore();
   const [passwords, setPasswords] = useState({ new: "", confirm: "" });
@@ -54,8 +56,12 @@ const Settings: React.FC = () => {
     "valley alien library bread worry brother bundle hammer loyal barely dune brave";
 
   useEffect(() => {
+    i18n.changeLanguage(language);
+  }, [language]);
+
+  useEffect(() => {
     (async () => {
-      const user = supabase.auth.getUser(); // get user id
+      const user = supabase.auth.getUser();
       const { data: userData } = await user;
       const userId = userData?.user?.id;
 
@@ -106,7 +112,7 @@ const Settings: React.FC = () => {
         if (existingTotp.status === "unverified") {
           await supabase.auth.mfa.unenroll({ factorId: existingTotp.id });
         } else {
-          const user = supabase.auth.getUser(); // get user id
+          const user = supabase.auth.getUser();
           const { data: userData } = await user;
           const userId = userData?.user?.id;
 
@@ -159,7 +165,7 @@ const Settings: React.FC = () => {
       });
 
       if (verifyError) throw verifyError;
-      const user = supabase.auth.getUser(); // get user id
+      const user = supabase.auth.getUser();
       const { data: userData } = await user;
       const userId = userData?.user?.id;
 
@@ -168,7 +174,6 @@ const Settings: React.FC = () => {
         return;
       }
 
-      // Update profile
       const { error: profileError } = await supabase
         .from("profiles")
         .update({ two_factor_enabled: true })
@@ -218,7 +223,7 @@ const Settings: React.FC = () => {
       });
 
       if (unenrollError) throw unenrollError;
-      const user = supabase.auth.getUser(); // get user id
+      const user = supabase.auth.getUser();
       const { data: userData } = await user;
       const userId = userData?.user?.id;
 
@@ -226,7 +231,7 @@ const Settings: React.FC = () => {
         toast.error("User not found. Cannot update profile.");
         return;
       }
-      // Update profile
+
       const { error: profileError } = await supabase
         .from("profiles")
         .update({ two_factor_enabled: false })
@@ -365,20 +370,20 @@ const Settings: React.FC = () => {
 
   return (
     <div className="space-y-8 max-w-3xl mx-auto pb-8">
-      <h1 className="text-2xl font-bold mb-6">Settings</h1>
+      <h1 className="text-2xl font-bold mb-6">{t('settings.title')}</h1>
 
       {/* Preferences Card */}
       <Card>
         <h2 className="text-lg font-semibold mb-6 flex items-center">
           <Globe2 size={20} className="mr-2 text-primary" />
-          Preferences
+          {t('settings.preferences.title')}
         </h2>
 
         <div className="space-y-6">
           {/* Currency Selection */}
           <div>
             <label className="block text-sm font-medium text-neutral-300 mb-2">
-              Currency
+              {t('settings.preferences.currency')}
             </label>
             <div className="flex items-center space-x-3">
               {["USD", "EUR", "GBP"].map((curr) => (
@@ -401,13 +406,13 @@ const Settings: React.FC = () => {
           {/* Language Selection */}
           <div>
             <label className="block text-sm font-medium text-neutral-300 mb-2">
-              Language
+              {t('settings.preferences.language')}
             </label>
             <div className="flex items-center space-x-3">
               {[
-                { code: "en", label: "English" },
-                { code: "fr", label: "Français" },
-                { code: "de", label: "Deutsch" },
+                { code: "en", label: t('languages.en') },
+                { code: "fr", label: t('languages.fr') },
+                { code: "de", label: t('languages.de') },
               ].map((lang) => (
                 <button
                   key={lang.code}
@@ -428,7 +433,7 @@ const Settings: React.FC = () => {
           {/* Theme Selection */}
           <div>
             <label className="block text-sm font-medium text-neutral-300 mb-2">
-              Theme
+              {t('settings.preferences.theme')}
             </label>
             <div className="flex items-center space-x-3">
               <button
@@ -440,7 +445,7 @@ const Settings: React.FC = () => {
                 }`}
               >
                 <Moon size={16} />
-                <span>Dark</span>
+                <span>{t('settings.preferences.themes.dark')}</span>
               </button>
               <button
                 onClick={() => setTheme("light")}
@@ -451,7 +456,7 @@ const Settings: React.FC = () => {
                 }`}
               >
                 <Sun size={16} />
-                <span>Light</span>
+                <span>{t('settings.preferences.themes.light')}</span>
               </button>
             </div>
           </div>
