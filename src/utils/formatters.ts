@@ -1,8 +1,14 @@
 // Format number as currency
-export const formatCurrency = (value: number, digits = 2) => {
+export const formatCurrency = (value: number, currency = "USD", digits = 2) => {
+  const currencyMap = {
+    USD: "USD",
+    EUR: "EUR",
+    GBP: "GBP",
+  };
+
   return new Intl.NumberFormat("en-US", {
     style: "currency",
-    currency: "USD",
+    currency: currencyMap[currency as keyof typeof currencyMap],
     minimumFractionDigits: digits,
     maximumFractionDigits: digits,
   }).format(value);
