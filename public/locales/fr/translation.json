@@ -1,0 +1,29 @@
+{
+  "settings": {
+    "title": "Paramètres",
+    "preferences": {
+      "title": "Préférences",
+      "currency": "Devise",
+      "language": "Langue",
+      "theme": "Thème",
+      "themes": {
+        "dark": "Sombre",
+        "light": "Clair"
+      }
+    },
+    "security": {
+      "title": "Sécurité",
+      "changePassword": "Changer le mot de passe",
+      "newPassword": "Nouveau mot de passe",
+      "confirmPassword": "Confirmer le mot de passe",
+      "recoveryPhrase": "Phrase de récupération",
+      "twoFactor": "Authentification à deux facteurs",
+      "saveChanges": "Enregistrer les modifications"
+    }
+  },
+  "languages": {
+    "en": "English",
+    "fr": "Français",
+    "de": "Deutsch"
+  }
+}

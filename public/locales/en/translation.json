@@ -1,0 +1,29 @@
+{
+  "settings": {
+    "title": "Settings",
+    "preferences": {
+      "title": "Preferences",
+      "currency": "Currency",
+      "language": "Language",
+      "theme": "Theme",
+      "themes": {
+        "dark": "Dark",
+        "light": "Light"
+      }
+    },
+    "security": {
+      "title": "Security",
+      "changePassword": "Change Password",
+      "newPassword": "New Password",
+      "confirmPassword": "Confirm Password",
+      "recoveryPhrase": "Recovery Phrase",
+      "twoFactor": "Two-Factor Authentication",
+      "saveChanges": "Save Changes"
+    }
+  },
+  "languages": {
+    "en": "English",
+    "fr": "Français",
+    "de": "Deutsch"
+  }
+}
