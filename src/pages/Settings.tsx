@@ -1,5 +1,5 @@
-import QRCode from "qrcode";
 import React, { useState, useEffect } from "react";
+import QRCode from "qrcode";
 import {
   Save,
   Shield,
@@ -8,10 +8,15 @@ import {
   EyeOff,
   QrCode,
   Check,
+  Globe2,
+  Coins,
+  Sun,
+  Moon,
 } from "lucide-react";
 import Card from "../components/ui/Card";
 import Button from "../components/ui/Button";
 import { supabase, useAuthStore } from "../store/authStore";
+import { useSettingsStore } from "../store/settingsStore";
 import toast, { Toaster } from "react-hot-toast";
 import { MoonLoader } from "react-spinners";
 import { adminSupabase } from "../store/adminStore";
@@ -34,6 +39,7 @@ export const TotpQr = ({ uri }: { uri: string }) => {
 
 const Settings: React.FC = () => {
   const authStore = useAuthStore();
+  const { currency, language, theme, setCurrency, setLanguage, setTheme } = useSettingsStore();
   const [passwords, setPasswords] = useState({ new: "", confirm: "" });
   const [showRecoveryPhrase, setShowRecoveryPhrase] = useState(false);
   const [totpUri, setTotpUri] = useState<string | null>(null);
@@ -360,6 +366,97 @@ const Settings: React.FC = () => {
   return (
     <div className="space-y-8 max-w-3xl mx-auto pb-8">
       <h1 className="text-2xl font-bold mb-6">Settings</h1>
+
+      {/* Preferences Card */}
+      <Card>
+        <h2 className="text-lg font-semibold mb-6 flex items-center">
+          <Globe2 size={20} className="mr-2 text-primary" />
+          Preferences
+        </h2>
+
+        <div className="space-y-6">
+          {/* Currency Selection */}
+          <div>
+            <label className="block text-sm font-medium text-neutral-300 mb-2">
+              Currency
+            </label>
+            <div className="flex items-center space-x-3">
+              {["USD", "EUR", "GBP"].map((curr) => (
+                <button
+                  key={curr}
+                  onClick={() => setCurrency(curr as any)}
+                  className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-all ${
+                    currency === curr
+                      ? "bg-primary text-white"
+                      : "bg-neutral-800 text-neutral-400 hover:text-white"
+                  }`}
+                >
+                  <Coins size={16} />
+                  <span>{curr}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Language Selection */}
+          <div>
+            <label className="block text-sm font-medium text-neutral-300 mb-2">
+              Language
+            </label>
+            <div className="flex items-center space-x-3">
+              {[
+                { code: "en", label: "English" },
+                { code: "fr", label: "Français" },
+                { code: "de", label: "Deutsch" },
+              ].map((lang) => (
+                <button
+                  key={lang.code}
+                  onClick={() => setLanguage(lang.code as any)}
+                  className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-all ${
+                    language === lang.code
+                      ? "bg-primary text-white"
+                      : "bg-neutral-800 text-neutral-400 hover:text-white"
+                  }`}
+                >
+                  <Globe2 size={16} />
+                  <span>{lang.label}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Theme Selection */}
+          <div>
+            <label className="block text-sm font-medium text-neutral-300 mb-2">
+              Theme
+            </label>
+            <div className="flex items-center space-x-3">
+              <button
+                onClick={() => setTheme("dark")}
+                className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-all ${
+                  theme === "dark"
+                    ? "bg-primary text-white"
+                    : "bg-neutral-800 text-neutral-400 hover:text-white"
+                }`}
+              >
+                <Moon size={16} />
+                <span>Dark</span>
+              </button>
+              <button
+                onClick={() => setTheme("light")}
+                className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-all ${
+                  theme === "light"
+                    ? "bg-primary text-white"
+                    : "bg-neutral-800 text-neutral-400 hover:text-white"
+                }`}
+              >
+                <Sun size={16} />
+                <span>Light</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </Card>
 
       {/* Security Card */}
       <Card>

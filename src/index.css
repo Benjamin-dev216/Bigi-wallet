@@ -3,18 +3,30 @@
 @tailwind utilities;
 
 @layer base {
+  :root {
+    --background: 15 23 42;
+    --background-light: 30 41 59;
+    --text: 248 250 252;
+  }
+
+  :root.light {
+    --background: 248 250 252;
+    --background-light: 241 245 249;
+    --text: 15 23 42;
+  }
+
   body {
-    @apply bg-background text-neutral-100 font-sans antialiased;
+    @apply bg-[rgb(var(--background))] text-[rgb(var(--text))] font-sans antialiased;
   }
 
   h1, h2, h3, h4, h5, h6 {
-    @apply font-bold text-white;
+    @apply font-bold text-[rgb(var(--text))];
   }
 }
 
 @layer components {
   .card {
-    @apply bg-background-light rounded-xl p-6 shadow-card backdrop-blur-sm border border-neutral-800;
+    @apply bg-[rgb(var(--background-light))] rounded-xl p-6 shadow-card backdrop-blur-sm border border-neutral-800;
   }
   
   .button-primary {
@@ -30,7 +42,7 @@
   }
   
   .input {
-    @apply bg-neutral-800 border border-neutral-700 text-white rounded-lg p-2.5 focus:ring-2 focus:ring-primary focus:border-primary outline-none;
+    @apply bg-[rgb(var(--background-light))] border border-neutral-700 text-[rgb(var(--text))] rounded-lg p-2.5 focus:ring-2 focus:ring-primary focus:border-primary outline-none;
   }
 }
 
@@ -40,7 +52,7 @@
 }
 
 ::-webkit-scrollbar-track {
-  @apply bg-background;
+  @apply bg-[rgb(var(--background))];
 }
 
 ::-webkit-scrollbar-thumb {
