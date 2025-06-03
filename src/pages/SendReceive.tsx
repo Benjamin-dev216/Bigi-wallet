@@ -10,6 +10,8 @@ import { supabase, useAuthStore } from "../store/authStore";
 import RecipientAddressInput from "../components/common/RecipientInput";
 import { sendErc20Token, sendEth, sendBTC } from "../utils/sendCrypto";
 import { Toaster } from "react-hot-toast";
+import { useSettingsStore } from "../store/settingsStore";
+import { useTranslation } from "react-i18next";
 
 type FeeLevel = "Slow" | "Medium" | "Fast";
 const SendReceive: React.FC = () => {
@@ -26,6 +28,9 @@ const SendReceive: React.FC = () => {
   const [network, setNetwork] = useState<"ethereum" | "bitcoin">("ethereum");
   const [feeLevel, setFeeLevel] = useState<FeeLevel>("Medium");
   const [fees, setFees] = useState<Record<string, string | number>>({});
+
+  const { currency } = useSettingsStore();
+  const { t } = useTranslation();
 
   const receiveData = [
     {
@@ -160,31 +165,31 @@ const SendReceive: React.FC = () => {
   return (
     <div className="max-w-xl mx-auto pb-8">
       {/* Tabs */}
-      <div className="flex bg-background-light rounded-lg mb-6 p-1">
+      <div className="flex bg-[rgb(var(--background-light))] rounded-lg mb-6 p-1">
         <button
           className={`flex-1 py-3 px-4 rounded-md transition-all ${
             activeTab === "send"
               ? "bg-primary text-white"
-              : "text-neutral-400 hover:text-white"
+              : "text-neutral-500 hover:text-[rgb(var(--text))]"
           }`}
           onClick={() => setActiveTab("send")}
         >
           <div className="flex items-center justify-center space-x-2">
             <Send size={18} />
-            <span>Send</span>
+            <span>{t("sendReceive.tabs.send")}</span>
           </div>
         </button>
         <button
           className={`flex-1 py-3 px-4 rounded-md transition-all ${
             activeTab === "receive"
               ? "bg-secondary text-white"
-              : "text-neutral-400 hover:text-white"
+              : "text-neutral-500 hover:hover:text-[rgb(var(--text))]"
           }`}
           onClick={() => setActiveTab("receive")}
         >
           <div className="flex items-center justify-center space-x-2">
             <QrCode size={18} />
-            <span>Receive</span>
+            <span>{t("sendReceive.tabs.receive")}</span>
           </div>
         </button>
       </div>
@@ -192,12 +197,14 @@ const SendReceive: React.FC = () => {
       <Card className="w-full animate-fade-in p-[10px] md:p-6">
         {activeTab === "send" ? (
           <div className="space-y-6">
-            <h2 className="text-xl font-bold">Send {toSendToken?.symbol}</h2>
+            <h2 className="text-xl font-bold">
+              {t("sendReceive.send.title", { symbol: toSendToken?.symbol })}
+            </h2>
 
             {/* Token Selector */}
             <div>
-              <label className="block text-sm font-medium text-neutral-300 mb-2">
-                Select Asset
+              <label className="block text-sm font-medium text-[rgb(var(--text))] mb-2">
+                {t("sendReceive.send.selectAsset")}
               </label>
               <select
                 className="input w-full"
@@ -223,8 +230,8 @@ const SendReceive: React.FC = () => {
 
             {/* Amount */}
             <div>
-              <label className="block text-sm font-medium text-neutral-300 mb-2">
-                Amount
+              <label className="block text-sm font-medium text-[rgb(var(--text))] mb-2">
+                {t("sendReceive.send.amount")}
               </label>
 
               {/* Input + Token */}
@@ -252,8 +259,14 @@ const SendReceive: React.FC = () => {
               <div className="flex justify-between">
                 {toSendToken && (
                   <p className="text-sm text-neutral-400 mt-1">
-                    Balance: {toSendToken.balance} {toSendToken.symbol} (
-                    {(toSendToken.balance * toSendToken.price).toFixed(2)} USD)
+                    {t("sendReceive.send.balance", {
+                      balance: toSendToken.balance,
+                      symbol: toSendToken.symbol,
+                      value: (toSendToken.balance * toSendToken.price).toFixed(
+                        2
+                      ),
+                      currency,
+                    })}
                   </p>
                 )}
                 {/* Quick % Buttons */}
@@ -263,7 +276,7 @@ const SendReceive: React.FC = () => {
                       <button
                         key={percent}
                         type="button"
-                        className="px-1 text-sm text-blue-400 bg-neutral-800 hover:bg-neutral-700 rounded"
+                        className="px-1 text-sm text-blue-400 bg-[rgb(var(--background-light))] rounded"
                         onClick={() =>
                           setAmount((toSendToken.balance * percent).toString())
                         }
@@ -273,33 +286,32 @@ const SendReceive: React.FC = () => {
                     ))}
                   </div>
                 )}
-
-                {/* Balance Info */}
               </div>
 
               {/* Warning */}
               {toSendToken &&
                 parseFloat(amount || "0") > toSendToken.balance && (
                   <p className="text-sm text-red-500 mt-1">
-                    Amount exceeds available balance after network fees
+                    {t("sendReceive.send.warning")}
                   </p>
                 )}
             </div>
+
             {/* Fee Options */}
             <div>
-              <label className="block text-sm font-medium text-neutral-300 mb-2">
-                Transaction Fee
+              <label className="block text-sm font-medium text-[rgb(var(--text))] mb-2">
+                {t("sendReceive.send.transactionFee")}
               </label>
               <div className="flex flex-wrap gap-2 w-full">
                 {["Slow", "Medium", "Fast"].map((level) => (
                   <label
                     key={level}
                     className={`flex-1 min-w-[120px] sm:min-w-[140px] flex items-center justify-center gap-2 px-3 py-2 rounded-md border cursor-pointer transition-colors text-sm
-                    ${
-                      feeLevel === level
-                        ? "bg-primary text-white border-primary"
-                        : "bg-neutral-800 border-neutral-700 text-neutral-300 hover:bg-neutral-700"
-                    }`}
+                  ${
+                    feeLevel === level
+                      ? "bg-primary text-white border-primary"
+                      : "bg-[rgb(var(--background))] text-[rgb(var(--text))] "
+                  }`}
                   >
                     <input
                       type="radio"
@@ -310,7 +322,9 @@ const SendReceive: React.FC = () => {
                       className="hidden"
                     />
                     <div className="flex flex-col items-center text-center w-full truncate">
-                      <span className="font-medium">{level}</span>
+                      <span className="font-medium">
+                        {t(`sendReceive.send.feeLevels.${level.toLowerCase()}`)}
+                      </span>
                       <span className="text-xs">{formatFeeAmount(level)}</span>
                     </div>
                   </label>
@@ -325,19 +339,21 @@ const SendReceive: React.FC = () => {
               onClick={handleSend}
               disabled={!recipientAddress || !amount}
             >
-              Send {toSendToken?.symbol}
+              {t("sendReceive.send.sendButton", {
+                symbol: toSendToken?.symbol,
+              })}
             </Button>
           </div>
         ) : (
           <div className="space-y-6">
             <h2 className="text-xl font-bold">
-              Receive {currentToken?.symbol}
+              {t("sendReceive.receive.title", { symbol: currentToken?.symbol })}
             </h2>
 
             {/* Token Selector */}
             <div>
-              <label className="block text-sm font-medium text-neutral-300 mb-2">
-                Select Asset
+              <label className="block text-sm font-medium text-[rgb(var(--text))] mb-2">
+                {t("sendReceive.receive.selectAsset")}
               </label>
               <select
                 className="input w-full"
@@ -372,8 +388,8 @@ const SendReceive: React.FC = () => {
 
               {/* Wallet Address */}
               <div className="w-full">
-                <label className="block text-sm font-medium text-neutral-300 mb-2">
-                  Your Wallet Address
+                <label className="block text-sm font-medium text-[rgb(var(--text))] mb-2">
+                  {t("sendReceive.receive.walletAddress")}
                 </label>
                 <div className="flex items-center">
                   <input
@@ -395,7 +411,9 @@ const SendReceive: React.FC = () => {
                   </Button>
                 </div>
                 <p className="text-sm text-neutral-400 mt-2">
-                  Share this address to receive {currentToken?.symbol} payments.
+                  {t("sendReceive.receive.shareMessage", {
+                    symbol: currentToken?.symbol,
+                  })}
                 </p>
               </div>
             </div>
@@ -403,10 +421,12 @@ const SendReceive: React.FC = () => {
             <div className="bg-warning/10 border border-warning/20 text-warning rounded-lg p-4 flex items-start">
               <AlertCircle size={20} className="mr-2 mt-0.5 flex-shrink-0" />
               <p className="text-sm">
-                Only send{" "}
-                {currentToken?.name === "Bitcoin" ? "BTC" : "ethereum tokens"}{" "}
-                to this address. Sending any other coin or token may result in
-                permanent loss.
+                {t("sendReceive.receive.warning", {
+                  assetType:
+                    currentToken?.name === "Bitcoin"
+                      ? t("sendReceive.assetTypes.bitcoin")
+                      : t("sendReceive.assetTypes.ethereum"),
+                })}
               </p>
             </div>
           </div>

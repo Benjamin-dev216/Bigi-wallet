@@ -16,14 +16,141 @@
       "changePassword": "Change Password",
       "newPassword": "New Password",
       "confirmPassword": "Confirm Password",
+      "confirmNewPassword": "Confirm New Password",
       "recoveryPhrase": "Recovery Phrase",
       "twoFactor": "Two-Factor Authentication",
-      "saveChanges": "Save Changes"
+      "saveChanges": "Save Changes",
+      "setup2FA": "Setup 2FA",
+      "disable2FA": "Disable 2FA",
+      "twoFactorEnabled": "2FA is enabled",
+      "confirmDisable": "Confirm Disable",
+      "cancel": "Cancel",
+      "verifyAndEnable": "Verify & Enable"
+    },
+    "about": {
+      "title": "BigiWallet",
+      "version": "Version 1.0.0",
+      "checkUpdates": "Check for updates"
     }
   },
   "languages": {
     "en": "English",
     "fr": "Français",
     "de": "Deutsch"
+  },
+  "messages": {
+    "passwordMismatch": "New password and confirm password do not match.",
+    "passwordUpdateFailed": "Failed to update password: {{error}}",
+    "passwordUpdateSuccess": "Password updated successfully!",
+    "userNotFound": "User not found. Cannot update profile.",
+    "failed2FASetup": "Failed to start 2FA setup",
+    "no2FAFactor": "No unverified TOTP factor found.",
+    "failed2FAVerify": "Failed to verify 2FA code",
+    "2FAEnabledSuccess": "2FA enabled successfully!",
+    "noTOTPFactor": "No TOTP factor found",
+    "failed2FADisable": "Failed to disable 2FA",
+    "2FADisabledSuccess": "2FA disabled successfully",
+    "recoveryPhraseWarning": "Never share your recovery phrase with anyone!",
+    "recoveryPhraseHidden": "Click the eye icon to reveal your recovery phrase",
+    "scanQRCode": "Scan this QR code with your authenticator app",
+    "enterCodeFromApp": "Enter code from app",
+    "enter2FACode": "Enter 2FA code",
+    "disable2FAConfirm": "Enter your 2FA code to confirm disabling two-factor authentication"
+  },
+  "buyCrypto": {
+    "title": "Buy Crypto",
+    "description": "Choose a partner to purchase crypto securely.",
+    "partners": {
+      "moonpay": "Buy with MoonPay",
+      "transak": "Buy with Transak",
+      "ramp": "Buy with Ramp"
+    }
+  },
+  "common": {
+    "ethereum": "Ethereum",
+    "bitcoin": "Bitcoin",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "save": "Save",
+    "close": "Close"
+  },
+  "balanceCard": {
+    "balance": {
+      "totalBalance": "Total Balance",
+      "showBalance": "Show balance",
+      "hideBalance": "Hide balance",
+      "hiddenBalance": "••••••••"
+    },
+    "actions": {
+      "send": "Send",
+      "receive": "Receive",
+      "buy": "Buy"
+    }
+  },
+  "priceChart": {
+    "title": "Price Chart",
+    "viewOn": "View on CoinMarketCap"
+  },
+  "assets": {
+    "title": "Assets",
+    "searchPlaceholder": "Search assets...",
+    "name": "Name",
+    "balance": "Balance",
+    "value": "Value ({{currency}})",
+    "loading": "Loading...",
+    "noAssetsFound": "No assets found.",
+    "sortByName": "Sort by name",
+    "sortByBalance": "Sort by balance",
+    "sortByValue": "Sort by value"
+  },
+  "recentTransactions": {
+    "title": "Recent Transactions",
+    "viewAll": "View All",
+    "sent": "Sent",
+    "received": "Received"
+  },
+  "sendReceive": {
+    "tabs": {
+      "send": "Send",
+      "receive": "Receive"
+    },
+    "send": {
+      "title": "Send {{symbol}}",
+      "selectAsset": "Select Asset",
+      "recipientAddress": "Recipient Address",
+      "recipientAddressPlaceholder": "Enter recipient address",
+      "amount": "Amount",
+      "balance": "Balance: {{balance}} {{symbol}} ({{value}} {{currency}})",
+      "transactionFee": "Transaction Fee",
+      "sendButton": "Send {{symbol}}",
+      "feeLevels": {
+        "slow": "Slow",
+        "medium": "Medium",
+        "fast": "Fast"
+      },
+      "warning": "Amount exceeds available balance after network fees"
+    },
+    "receive": {
+      "title": "Receive {{symbol}}",
+      "selectAsset": "Select Asset",
+      "walletAddress": "Your Wallet Address",
+      "shareMessage": "Share this address to receive {{symbol}} payments.",
+      "warning": "Only send {{assetType}} to this address. Sending any other coin or token may result in permanent loss."
+    },
+    "assetTypes": {
+      "bitcoin": "BTC",
+      "ethereum": "ethereum tokens"
+    }
+  },
+  "recipientAddress": {
+    "label": "Recipient Address ({network})",
+    "placeholder": "Enter {network} address",
+    "invalidEthereum": "Invalid Ethereum address",
+    "invalidBitcoin": "Invalid Bitcoin address",
+    "scanButton": "Scan QR code",
+    "scanTitle": "Scan QR Code",
+    "cameraDenied": "Camera access denied. Please allow it.",
+    "noCamera": "No camera found on this device.",
+    "cameraError": "Unable to access the camera."
   }
 }

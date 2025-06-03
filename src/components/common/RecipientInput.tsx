@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { ScanBarcode, X } from "lucide-react";
 import { QrReader } from "react-qr-reader";
+import { useTranslation } from "react-i18next";
 
 interface Props {
   recipientAddress: string;
@@ -19,6 +20,7 @@ const RecipientAddressInput: React.FC<Props> = ({
   setRecipientAddress,
   senderAddress,
 }) => {
+  const { t } = useTranslation();
   const [showScanner, setShowScanner] = useState(false);
   const [cameraError, setCameraError] = useState<string | null>(null);
   const [validationError, setValidationError] = useState<string | null>(null);
@@ -44,11 +46,13 @@ const RecipientAddressInput: React.FC<Props> = ({
 
     if (network === "ethereum") {
       setValidationError(
-        isEthereumAddress(address) ? null : "Invalid Ethereum address"
+        isEthereumAddress(address)
+          ? null
+          : t("recipientAddress.invalidEthereum")
       );
     } else {
       setValidationError(
-        isBitcoinAddress(address) ? null : "Invalid Bitcoin address"
+        isBitcoinAddress(address) ? null : t("recipientAddress.invalidBitcoin")
       );
     }
   };
@@ -61,14 +65,16 @@ const RecipientAddressInput: React.FC<Props> = ({
 
   return (
     <div className="relative w-full">
-      <label className="block text-sm font-medium text-neutral-300 mb-2">
-        Recipient Address ({network})
+      <label className="block text-sm font-medium text-[rgb(var(--text))] mb-2">
+        {t("recipientAddress.label", { network: t(`common.${network}`) })}
       </label>
 
       <div className="relative flex items-center gap-2">
         <input
           type="text"
-          placeholder={`Enter ${network} address`}
+          placeholder={t("recipientAddress.placeholder", {
+            network: t(`common.${network}`),
+          })}
           className={`input w-full pr-10 ${
             validationError ? "border-red-500" : "border-neutral-700"
           }`}
@@ -82,6 +88,7 @@ const RecipientAddressInput: React.FC<Props> = ({
             setShowScanner(true);
           }}
           className="absolute right-2 top-1/2 transform -translate-y-1/2 text-neutral-400 hover:text-white"
+          aria-label={t("recipientAddress.scanButton")}
         >
           <ScanBarcode size={20} />
         </button>
@@ -93,20 +100,20 @@ const RecipientAddressInput: React.FC<Props> = ({
 
       {showScanner && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm">
-          <div className="relative bg-neutral-900 rounded-2xl p-5 w-[90%] max-w-sm shadow-2xl border border-neutral-700">
+          <div className="relative bg-[rgb(var(--background-light))] rounded-2xl p-5 w-[90%] max-w-sm shadow-2xl border border-neutral-700">
             <button
               className="absolute top-3 right-3 text-neutral-400 hover:text-white"
               onClick={() => {
                 setShowScanner(false);
                 setCameraError(null);
               }}
-              aria-label="Close"
+              aria-label={t("common.close")}
             >
               <X size={18} />
             </button>
 
-            <h2 className="text-white text-lg font-semibold mb-4 text-center">
-              Scan QR Code
+            <h2 className="text-[rgb(var(--text))] text-lg font-semibold mb-4 text-center">
+              {t("recipientAddress.scanTitle")}
             </h2>
 
             <div className="rounded-lg overflow-hidden border border-neutral-700">
@@ -121,11 +128,11 @@ const RecipientAddressInput: React.FC<Props> = ({
                       error.name === "NotAllowedError" ||
                       error.name === "PermissionDeniedError"
                     ) {
-                      setCameraError("Camera access denied. Please allow it.");
+                      setCameraError(t("recipientAddress.cameraDenied"));
                     } else if (error.name === "NotFoundError") {
-                      setCameraError("No camera found on this device.");
+                      setCameraError(t("recipientAddress.noCamera"));
                     } else {
-                      setCameraError("Unable to access the camera.");
+                      setCameraError(t("recipientAddress.cameraError"));
                     }
                   }
                 }}
@@ -151,7 +158,7 @@ const RecipientAddressInput: React.FC<Props> = ({
                 setCameraError(null);
               }}
             >
-              Cancel
+              {t("common.cancel")}
             </button>
           </div>
         </div>

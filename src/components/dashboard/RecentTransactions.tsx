@@ -10,12 +10,15 @@ import {
 import { fetchTransactions } from "../../utils/fetchTransactions";
 import { NormalizedTransaction } from "../../types/wallet"; // adjust import path
 import { useAuthStore } from "../../store/authStore";
+import { useTranslation } from "react-i18next";
 
 const RecentTransactions: React.FC = () => {
   const { wallets } = useAuthStore();
   const [transactions, setTransactions] = useState<NormalizedTransaction[]>([]);
   const navigate = useNavigate();
   const hasLoaded = useRef(false); // to prevent double fetch
+
+  const { t } = useTranslation();
 
   useEffect(() => {
     if (
@@ -53,14 +56,14 @@ const RecentTransactions: React.FC = () => {
   };
 
   return (
-    <Card className="w-full animate-slide-up min-h-[285px]">
+    <Card variant="glass" className="w-full animate-slide-up min-h-[285px]">
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-lg font-medium">Recent Transactions</h2>
+        <h2 className="text-lg font-medium">{t("recentTransactions.title")}</h2>
         <button
           onClick={() => navigate("/transactions")}
           className="text-primary hover:text-primary-light text-sm"
         >
-          View All
+          {t("recentTransactions.viewAll")}
         </button>
       </div>
 
@@ -89,8 +92,11 @@ const RecentTransactions: React.FC = () => {
                     )}
                   </div>
                   <div className="ml-3">
-                    <p className="font-medium">
-                      {isReceive ? "Received" : "Sent"} {token}
+                    <p className="text-[rgb(var(--text))]">
+                      {isReceive
+                        ? t("recentTransactions.sent")
+                        : t("recentTransactions.received")}{" "}
+                      {token}
                     </p>
                     <p className="text-xs text-neutral-400">
                       {formatDateTime(tx.timestamp)}

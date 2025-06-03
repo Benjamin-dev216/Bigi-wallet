@@ -3,8 +3,26 @@
 @tailwind utilities;
 
 @layer base {
+  :root {
+    --background: 15 23 42;
+    --background-light: 30 41 59;
+    --background-medium: 30, 41, 59;
+    --button-light: 15 23 42;
+    --text: 248 250 252;
+    --navItem: 255, 255, 255;
+  }
+
+  :root.light {
+    --background: 248 250 252;
+    --background-light: 241 245 249;
+    --background-medium: 30, 41, 59, 0.05;
+    --button-light: 30, 41, 59, 0.05;
+    --text: 15 23 42;
+    --navItem: 0, 0, 0;
+  }
+
   body {
-    @apply bg-background text-neutral-100 font-sans antialiased;
+    @apply bg-[rgb(var(--background))] text-[rgb(var(--text))] font-sans antialiased;
   }
 
   h1,
@@ -13,13 +31,13 @@
   h4,
   h5,
   h6 {
-    @apply font-bold text-white;
+    @apply font-bold text-[rgb(var(--text))];
   }
 }
 
 @layer components {
   .card {
-    @apply bg-background-light rounded-xl p-6 shadow-card backdrop-blur-sm border border-neutral-800;
+    @apply bg-[rgb(var(--background-light))] rounded-xl p-6 shadow-card backdrop-blur-sm border border-neutral-800;
   }
 
   .button-primary {
@@ -35,7 +53,7 @@
   }
 
   .input {
-    @apply bg-neutral-800 border border-neutral-700 text-white rounded-lg p-2.5 focus:ring-2 focus:ring-primary focus:border-primary outline-none;
+    @apply bg-[rgb(var(--background-light))] border border-neutral-700 text-[rgb(var(--text))] rounded-lg p-2.5 focus:ring-2 focus:ring-primary focus:border-primary outline-none;
   }
 }
 
@@ -45,15 +63,15 @@
 }
 
 ::-webkit-scrollbar-track {
-  @apply bg-background;
+  @apply bg-[rgb(var(--background))];
 }
 
 ::-webkit-scrollbar-thumb {
-  @apply bg-neutral-700 rounded-full;
+  @apply bg-[rgb(var(--background-medium))] rounded-full;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  @apply bg-neutral-600;
+  @apply bg-[rgb(var(--button-light))];
 }
 
 /* Glass effect for cards */

@@ -1,8 +1,7 @@
 import React, { ButtonHTMLAttributes } from "react";
-import { DivideIcon as LucideIcon } from "lucide-react";
 
 interface ActionButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  icon: LucideIcon;
+  icon: any;
   label: string;
   primary?: boolean;
 }
@@ -18,8 +17,8 @@ const ActionButton: React.FC<ActionButtonProps> = ({
     <button
       className={`flex items-center justify-center px-4 sm:px-5 py-3 rounded-lg transition-all duration-200 ${
         primary
-          ? "bg-blue-600 hover:bg-blue-700 text-white"
-          : "bg-gray-800 hover:bg-gray-700 text-white"
+          ? "bg-primary hover:bg-primary-dark text-white"
+          : "bg-[rgb(var(--button-light))] text-[rgb(var(--text))]"
       } ${className}`}
       {...props}
     >

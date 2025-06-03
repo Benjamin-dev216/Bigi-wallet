@@ -11,9 +11,9 @@ import {
 
 const Sidebar: React.FC = () => {
   return (
-    <aside className="w-full h-full bg-background-light border-r border-neutral-800 flex flex-col">
+    <aside className="w-full h-full bg-[rgb(var(--background-light))]  flex flex-col">
       {/* Logo */}
-      <div className="p-6 border-b border-neutral-800">
+      <div className="p-6 ">
         <div className="flex items-center space-x-2">
           <Wallet className="h-6 w-6 text-primary" />
           <span className="text-xl font-bold gradient-text">BigiWallet</span>
@@ -42,7 +42,7 @@ const Sidebar: React.FC = () => {
       </nav>
 
       {/* Bottom Navigation */}
-      <div className="p-4 border-t border-neutral-800">
+      <div className="p-4 ">
         <NavItem
           to="/settings"
           icon={<Settings size={20} />}
@@ -64,11 +64,11 @@ const NavItem: React.FC<NavItemProps> = ({ to, icon, label }) => {
     <NavLink
       to={to}
       className={({ isActive }) => `
-        flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200
+        flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 
         ${
           isActive
             ? "bg-primary/20 text-primary"
-            : "text-neutral-400 hover:text-white hover:bg-neutral-800"
+            : "text-neutral-400 hover:text-[rgb(var(--navItem))]"
         }
       `}
     >

@@ -79,9 +79,21 @@ const Settings: React.FC = () => {
     })();
   }, []);
 
-  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setPasswords((prev) => ({ ...prev, [name]: value }));
+  const handlePasswordChange = async () => {
+    if (passwords.new !== passwords.confirm) {
+      toast.error(t("messages.passwordMismatch"));
+      return;
+    }
+
+    const { error } = await supabase.auth.updateUser({
+      password: passwords.new,
+    });
+    if (error) {
+      toast.error(t("messages.passwordUpdateFailed", { error: error.message }));
+    } else {
+      toast.success(t("messages.passwordUpdateSuccess"));
+      setPasswords({ new: "", confirm: "" });
+    }
   };
 
   const handleSavePassword = async () => {
@@ -133,7 +145,7 @@ const Settings: React.FC = () => {
       if (enrollError) throw enrollError;
       setTotpUri(enrollData.totp.uri);
     } catch (err) {
-      toast.error("Failed to start 2FA setup");
+      toast.error(t("messages.failed2FASetup"));
     } finally {
       setMfaLoading(false);
     }
@@ -148,7 +160,7 @@ const Settings: React.FC = () => {
       );
 
       if (!totpFactor) {
-        toast.error("No unverified TOTP factor found.");
+        toast.error(t("messages.no2FAFactor"));
         return;
       }
 
@@ -171,7 +183,7 @@ const Settings: React.FC = () => {
       const userId = userData?.user?.id;
 
       if (!userId) {
-        toast.error("User not found. Cannot update profile.");
+        toast.error(t("messages.userNotFound"));
         return;
       }
 
@@ -181,13 +193,13 @@ const Settings: React.FC = () => {
         .eq("user_id", userId);
       if (profileError) throw profileError;
 
-      toast.success("2FA enabled successfully!");
+      toast.success(t("messages.2FAEnabledSuccess"));
       setTotpVerified(true);
       setTotpUri(null);
       setCodeInput("");
     } catch (err) {
       toast.error(
-        err instanceof Error ? err.message : "Failed to verify 2FA code"
+        err instanceof Error ? err.message : t("messages.failed2FAVerify")
       );
     }
   };
@@ -200,7 +212,7 @@ const Settings: React.FC = () => {
       );
 
       if (!totpFactor) {
-        toast.error("No TOTP factor found");
+        toast.error(t("messages.noTOTPFactor"));
         return;
       }
 
@@ -229,7 +241,7 @@ const Settings: React.FC = () => {
       const userId = userData?.user?.id;
 
       if (!userId) {
-        toast.error("User not found. Cannot update profile.");
+        toast.error(t("messages.userNotFound"));
         return;
       }
 
@@ -240,36 +252,38 @@ const Settings: React.FC = () => {
 
       if (profileError) throw profileError;
 
-      toast.success("2FA disabled successfully");
+      toast.success(t("messages.2FADisabledSuccess"));
       setTotpVerified(false);
       setDisabling2FA(false);
       setDisable2FACode("");
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Failed to disable 2FA");
+      toast.error(
+        err instanceof Error ? err.message : t("messages.failed2FADisable")
+      );
     }
   };
 
   const renderRecoveryPhrase = () =>
     showRecoveryPhrase ? (
-      <div className="p-4 bg-neutral-800/50 rounded-lg">
+      <div className="p-4 rounded-lg bg-[rgb(var(--background-light))]">
         <div className="grid grid-cols-3 gap-2">
           {recoveryPhrase.split(" ").map((word, index) => (
             <div key={index} className="flex items-center">
-              <span className="text-neutral-400 mr-2 text-xs">
+              <span className="mr-2 text-xs text-[rgb(var(--text))] ">
                 {index + 1}.
               </span>
-              <span>{word}</span>
+              <span className="text-[rgb(var(--text))]">{word}</span>
             </div>
           ))}
         </div>
-        <div className="mt-4 text-warning text-sm">
-          Never share your recovery phrase with anyone!
+        <div className="mt-4 text-sm text-yellow-600 dark:text-yellow-400">
+          {t("messages.recoveryPhraseWarning")}
         </div>
       </div>
     ) : (
-      <div className="p-4 bg-neutral-800/50 rounded-lg text-center">
-        <p className="text-sm text-neutral-400">
-          Click the eye icon to reveal your recovery phrase
+      <div className="p-4 rounded-lg text-center bg-[rgb(var(--background-light))] ">
+        <p className="text-sm text-[rgb(var(--text))]">
+          {t("messages.recoveryPhraseHidden")}
         </p>
       </div>
     );
@@ -279,16 +293,18 @@ const Settings: React.FC = () => {
       return (
         <div className="space-y-4">
           <div className="bg-error/10 border border-error/20 rounded-lg p-4">
-            <h3 className="text-error font-medium mb-2">Disable 2FA</h3>
+            <h3 className="text-error font-medium mb-2">
+              {t("settings.security.disable2FA")}
+            </h3>
             <p className="text-sm text-neutral-400 mb-4">
-              Enter your 2FA code to confirm disabling two-factor authentication
+              {t("messages.disable2FAConfirm")}
             </p>
             <input
               type="text"
               className="input w-full text-center mb-4"
               value={disable2FACode}
               onChange={(e) => setDisable2FACode(e.target.value)}
-              placeholder="Enter 2FA code"
+              placeholder={t("messages.enter2FACode")}
               maxLength={6}
             />
             <div className="flex space-x-2">
@@ -297,7 +313,7 @@ const Settings: React.FC = () => {
                 size="sm"
                 onClick={() => setDisabling2FA(false)}
               >
-                Cancel
+                {t("settings.security.cancel")}
               </Button>
               <Button
                 variant="primary"
@@ -305,7 +321,7 @@ const Settings: React.FC = () => {
                 onClick={handleDisable2FA}
                 className="bg-error hover:bg-error/90"
               >
-                Confirm Disable
+                {t("settings.security.confirmDisable")}
               </Button>
             </div>
           </div>
@@ -317,7 +333,7 @@ const Settings: React.FC = () => {
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-2 text-success">
             <Check size={18} />
-            <span>2FA is enabled</span>
+            <span>{t("settings.security.twoFactorEnabled")}</span>
           </div>
           <Button
             variant="outline"
@@ -325,7 +341,7 @@ const Settings: React.FC = () => {
             className="text-error"
             onClick={() => setDisabling2FA(true)}
           >
-            Disable 2FA
+            {t("settings.security.disable2FA")}
           </Button>
         </div>
       );
@@ -344,18 +360,18 @@ const Settings: React.FC = () => {
         <>
           <TotpQr uri={totpUri} />
           <p className="text-sm text-neutral-400 text-center mb-4">
-            Scan this QR code with your authenticator app
+            {t("messages.scanQRCode")}
           </p>
           <input
             type="text"
-            placeholder="Enter code from app"
+            placeholder={t("messages.enterCodeFromApp")}
             className="input w-full mb-2"
             value={codeInput}
             onChange={(e) => setCodeInput(e.target.value)}
           />
           <Button variant="primary" onClick={handleVerify2FA}>
             <Check size={16} className="mr-2" />
-            Verify & Enable
+            {t("settings.security.verifyAndEnable")}
           </Button>
         </>
       );
@@ -364,13 +380,13 @@ const Settings: React.FC = () => {
     return (
       <Button variant="outline" onClick={handleStart2FA}>
         <QrCode size={16} className="mr-2" />
-        Setup 2FA
+        {t("settings.security.setup2FA")}
       </Button>
     );
   };
 
   return (
-    <div className="space-y-8 max-w-3xl mx-auto pb-8">
+    <div className="space-y-8 max-w-3xl mx-auto pb-8 ">
       <h1 className="text-2xl font-bold mb-6">{t("settings.title")}</h1>
 
       {/* Preferences Card */}
@@ -383,30 +399,32 @@ const Settings: React.FC = () => {
         <div className="space-y-6">
           {/* Currency Selection */}
           <div>
-            <label className="block text-sm font-medium text-neutral-300 mb-2">
+            <label className="block text-sm font-medium text-[rgb(var(--text))] mb-2">
               {t("settings.preferences.currency")}
             </label>
             <div className="flex items-center space-x-3">
-              {["USD", "EUR", "GBP"].map((curr) => (
-                <button
-                  key={curr}
-                  onClick={() => setCurrency(curr as any)}
-                  className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-all ${
-                    currency === curr
-                      ? "bg-primary text-white"
-                      : "bg-neutral-800 text-neutral-400 hover:text-white"
-                  }`}
-                >
-                  <Coins size={16} />
-                  <span>{curr}</span>
-                </button>
-              ))}
+              {["USD", "EUR", "GBP"].map((curr) => {
+                const isActive = currency === curr;
+                return (
+                  <button
+                    key={curr}
+                    onClick={() => setCurrency(curr as any)}
+                    className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-all font-medium ${
+                      isActive
+                        ? "bg-primary text-white"
+                        : "bg-[rgb(var(--background-light))] text-[rgb(var(--text))] hover:bg-primary/20"
+                    }`}
+                  >
+                    <Coins size={16} />
+                    <span>{curr}</span>
+                  </button>
+                );
+              })}
             </div>
           </div>
-
           {/* Language Selection */}
           <div>
-            <label className="block text-sm font-medium text-neutral-300 mb-2">
+            <label className="block text-sm font-medium  mb-2 text-[rgb(var(--text))]">
               {t("settings.preferences.language")}
             </label>
             <div className="flex items-center space-x-3">
@@ -418,10 +436,10 @@ const Settings: React.FC = () => {
                 <button
                   key={lang.code}
                   onClick={() => setLanguage(lang.code as any)}
-                  className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-all ${
+                  className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-all font-medium ${
                     language === lang.code
                       ? "bg-primary text-white"
-                      : "bg-neutral-800 text-neutral-400 hover:text-white"
+                      : "hover:bg-primary/20 bg-[rgb(var(--background-light))] text-[rgb(var(--text))]"
                   }`}
                 >
                   <Globe2 size={16} />
@@ -433,16 +451,16 @@ const Settings: React.FC = () => {
 
           {/* Theme Selection */}
           <div>
-            <label className="block text-sm font-medium text-neutral-300 mb-2">
+            <label className="block text-sm font-medium  mb-2 text-[rgb(var(--text))]">
               {t("settings.preferences.theme")}
             </label>
             <div className="flex items-center space-x-3">
               <button
                 onClick={() => setTheme("dark")}
-                className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-all ${
+                className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-all font-medium ${
                   theme === "dark"
                     ? "bg-primary text-white"
-                    : "bg-neutral-800 text-neutral-400 hover:text-white"
+                    : "hover:bg-primary/20 bg-[rgb(var(--background-light))] text-[rgb(var(--text))]"
                 }`}
               >
                 <Moon size={16} />
@@ -453,7 +471,7 @@ const Settings: React.FC = () => {
                 className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-all ${
                   theme === "light"
                     ? "bg-primary text-white"
-                    : "bg-neutral-800 text-neutral-400 hover:text-white"
+                    : "hover:bg-primary/20 bg-[rgb(var(--background-light))] text-[rgb(var(--text))]"
                 }`}
               >
                 <Sun size={16} />
@@ -468,21 +486,21 @@ const Settings: React.FC = () => {
       <Card>
         <h2 className="text-lg font-semibold mb-6 flex items-center">
           <Shield size={20} className="mr-2 text-primary" />
-          Security
+          {t("settings.security.title")}
         </h2>
 
         <div className="space-y-6">
           {/* Password Change */}
           <div>
-            <label className="block text-sm font-medium text-neutral-300 mb-2">
-              Change Password
+            <label className="block text-sm font-medium text-[rgb(var(--text))] mb-2">
+              {t("settings.security.changePassword")}
             </label>
             <div className="space-y-3">
               <input
                 type="password"
                 name="new"
                 className="input w-full"
-                placeholder="New Password"
+                placeholder={t("settings.security.newPassword")}
                 value={passwords.new}
                 onChange={handlePasswordChange}
               />
@@ -490,7 +508,7 @@ const Settings: React.FC = () => {
                 type="password"
                 name="confirm"
                 className="input w-full"
-                placeholder="Confirm New Password"
+                placeholder={t("settings.security.confirmPassword")}
                 value={passwords.confirm}
                 onChange={handlePasswordChange}
               />
@@ -500,8 +518,8 @@ const Settings: React.FC = () => {
           {/* Recovery Phrase */}
           <div>
             <div className="flex justify-between items-center mb-2">
-              <label className="block text-sm font-medium text-neutral-300">
-                Recovery Phrase
+              <label className="block text-sm font-medium text-[rgb(var(--text))]">
+                {t("settings.security.recoveryPhrase")}
               </label>
               <Button
                 variant="ghost"
@@ -516,8 +534,8 @@ const Settings: React.FC = () => {
 
           {/* 2FA Section */}
           <div className="pt-4 border-t border-neutral-800">
-            <label className="block text-sm font-medium text-neutral-300 mb-2">
-              Two-Factor Authentication
+            <label className="block text-sm font-medium  text-[rgb(var(--text))] mb-2">
+              {t("settings.security.twoFactor")}
             </label>
 
             {render2FASection()}
@@ -527,7 +545,7 @@ const Settings: React.FC = () => {
           <div className="flex justify-end pt-4">
             <Button variant="primary" onClick={handleSavePassword}>
               <Save size={16} className="mr-2" />
-              Save Changes
+              {t("settings.security.saveChanges")}
             </Button>
           </div>
         </div>
@@ -535,11 +553,15 @@ const Settings: React.FC = () => {
 
       {/* About Section */}
       <Card variant="outline" className="text-center">
-        <h2 className="text-lg font-medium mb-2">BigiWallet</h2>
-        <p className="text-sm text-neutral-400 mb-4">Version 1.0.0</p>
+        <h2 className="text-lg font-medium mb-2">
+          {t("settings.about.title")}
+        </h2>
+        <p className="text-sm text-neutral-400 mb-4">
+          {t("settings.about.version")}
+        </p>
         <button className="text-primary hover:text-primary-light text-sm flex items-center justify-center mx-auto">
           <RefreshCw size={14} className="mr-1" />
-          Check for updates
+          {t("settings.about.checkUpdates")}
         </button>
       </Card>
       <Toaster position="top-center" reverseOrder={false} />

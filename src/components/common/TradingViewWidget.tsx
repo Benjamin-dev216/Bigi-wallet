@@ -1,9 +1,12 @@
 import { useEffect, useRef } from "react";
+import { useSettingsStore } from "../../store/settingsStore";
 
 const TradingViewWidget = ({ symbol = "BTCUSD" }: { symbol?: string }) => {
+  const { theme } = useSettingsStore();
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    console.log(theme);
     if (!containerRef.current) return;
 
     const script = document.createElement("script");
@@ -17,7 +20,7 @@ const TradingViewWidget = ({ symbol = "BTCUSD" }: { symbol?: string }) => {
         symbol: `BINANCE:${symbol}`,
         interval: "60",
         timezone: "Etc/UTC",
-        theme: "dark",
+        theme: theme,
         style: 3, // Area chart
         locale: "en",
         toolbar_bg: "#1e293b",
@@ -40,7 +43,7 @@ const TradingViewWidget = ({ symbol = "BTCUSD" }: { symbol?: string }) => {
     };
 
     containerRef.current.appendChild(script);
-  }, [symbol]);
+  }, [symbol, theme]);
 
   return (
     <div

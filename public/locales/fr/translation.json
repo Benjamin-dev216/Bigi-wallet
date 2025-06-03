@@ -16,14 +16,141 @@
       "changePassword": "Changer le mot de passe",
       "newPassword": "Nouveau mot de passe",
       "confirmPassword": "Confirmer le mot de passe",
+      "confirmNewPassword": "Confirmer le nouveau mot de passe",
       "recoveryPhrase": "Phrase de récupération",
       "twoFactor": "Authentification à deux facteurs",
-      "saveChanges": "Enregistrer les modifications"
+      "saveChanges": "Enregistrer les modifications",
+      "setup2FA": "Configurer 2FA",
+      "disable2FA": "Désactiver 2FA",
+      "twoFactorEnabled": "2FA est activé",
+      "confirmDisable": "Confirmer la désactivation",
+      "cancel": "Annuler",
+      "verifyAndEnable": "Vérifier et activer"
+    },
+    "about": {
+      "title": "BigiWallet",
+      "version": "Version 1.0.0",
+      "checkUpdates": "Vérifier les mises à jour"
     }
   },
   "languages": {
-    "en": "English",
+    "en": "Anglais",
     "fr": "Français",
-    "de": "Deutsch"
+    "de": "Allemand"
+  },
+  "messages": {
+    "passwordMismatch": "Le nouveau mot de passe et la confirmation ne correspondent pas.",
+    "passwordUpdateFailed": "Échec de la mise à jour du mot de passe : {{error}}",
+    "passwordUpdateSuccess": "Mot de passe mis à jour avec succès !",
+    "userNotFound": "Utilisateur introuvable. Impossible de mettre à jour le profil.",
+    "failed2FASetup": "Échec de la configuration 2FA",
+    "no2FAFactor": "Aucun facteur TOTP non vérifié trouvé.",
+    "failed2FAVerify": "Échec de la vérification du code 2FA",
+    "2FAEnabledSuccess": "2FA activé avec succès !",
+    "noTOTPFactor": "Aucun facteur TOTP trouvé",
+    "failed2FADisable": "Échec de la désactivation 2FA",
+    "2FADisabledSuccess": "2FA désactivé avec succès",
+    "recoveryPhraseWarning": "Ne partagez jamais votre phrase de récupération avec qui que ce soit !",
+    "recoveryPhraseHidden": "Cliquez sur l'icône œil pour révéler votre phrase de récupération",
+    "scanQRCode": "Scannez ce code QR avec votre application d'authentification",
+    "enterCodeFromApp": "Entrez le code de l'application",
+    "enter2FACode": "Entrez le code 2FA",
+    "disable2FAConfirm": "Entrez votre code 2FA pour confirmer la désactivation de l'authentification à deux facteurs"
+  },
+  "buyCrypto": {
+    "title": "Acheter des Cryptos",
+    "description": "Choisissez un partenaire pour acheter des cryptomonnaies en toute sécurité.",
+    "partners": {
+      "moonpay": "Acheter avec MoonPay",
+      "transak": "Acheter avec Transak",
+      "ramp": "Acheter avec Ramp"
+    }
+  },
+  "common": {
+    "ethereum": "Ethereum",
+    "bitcoin": "Bitcoin",
+    "cancel": "Annuler",
+    "confirm": "Confirmer",
+    "save": "Enregistrer",
+    "close": "Fermer"
+  },
+  "balanceCard": {
+    "balance": {
+      "totalBalance": "Solde Total",
+      "showBalance": "Afficher le solde",
+      "hideBalance": "Masquer le solde",
+      "hiddenBalance": "••••••••"
+    },
+    "actions": {
+      "send": "Envoyer",
+      "receive": "Recevoir",
+      "buy": "Acheter"
+    }
+  },
+  "priceChart": {
+    "title": "Tableau des prix",
+    "viewOn": "Voir sur CoinMarketCap"
+  },
+  "assets": {
+    "title": "Actifs",
+    "searchPlaceholder": "Rechercher des actifs...",
+    "name": "Nom",
+    "balance": "Solde",
+    "value": "Valeur ({{currency}})",
+    "loading": "Chargement...",
+    "noAssetsFound": "Aucun actif trouvé.",
+    "sortByName": "Trier par nom",
+    "sortByBalance": "Trier par solde",
+    "sortByValue": "Trier par valeur"
+  },
+  "recentTransactions": {
+    "title": "Transactions récentes",
+    "viewAll": "Tout voir",
+    "sent": "Sent",
+    "received": "Envoyée"
+  },
+  "sendReceive": {
+    "tabs": {
+      "send": "Envoyer",
+      "receive": "Recevoir"
+    },
+    "send": {
+      "title": "Envoyer {{symbol}}",
+      "selectAsset": "Sélectionner un actif",
+      "recipientAddress": "Adresse du destinataire",
+      "recipientAddressPlaceholder": "Entrez l'adresse du destinataire",
+      "amount": "Montant",
+      "balance": "Solde : {{balance}} {{symbol}} ({{value}} {{currency}})",
+      "transactionFee": "Frais de transaction",
+      "sendButton": "Envoyer {{symbol}}",
+      "feeLevels": {
+        "slow": "Lent",
+        "medium": "Moyen",
+        "fast": "Rapide"
+      },
+      "warning": "Le montant dépasse le solde disponible après les frais de réseau"
+    },
+    "receive": {
+      "title": "Recevoir {{symbol}}",
+      "selectAsset": "Sélectionner un actif",
+      "walletAddress": "Votre adresse de portefeuille",
+      "shareMessage": "Partagez cette adresse pour recevoir des paiements en {{symbol}}.",
+      "warning": "N'envoyez que des {{assetType}} à cette adresse. L'envoi d'une autre pièce ou jeton peut entraîner une perte permanente."
+    },
+    "assetTypes": {
+      "bitcoin": "BTC",
+      "ethereum": "jetons Ethereum"
+    }
+  },
+  "recipientAddress": {
+    "label": "Adresse du destinataire ({network})",
+    "placeholder": "Entrez une adresse {network}",
+    "invalidEthereum": "Adresse Ethereum invalide",
+    "invalidBitcoin": "Adresse Bitcoin invalide",
+    "scanButton": "Scanner le code QR",
+    "scanTitle": "Scanner le code QR",
+    "cameraDenied": "Accès à la caméra refusé. Veuillez l'autoriser.",
+    "noCamera": "Aucune caméra trouvée sur cet appareil.",
+    "cameraError": "Impossible d'accéder à la caméra."
   }
 }

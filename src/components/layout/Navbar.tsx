@@ -32,12 +32,12 @@ const Navbar: React.FC = () => {
   };
 
   return (
-    <header className="border-b border-neutral-800 bg-background-light/50 backdrop-blur-sm">
+    <header className="bg-[rgb(var(--background-medium))] backdrop-blur-sm">
       <div className="container mx-auto px-4 md:px-6">
         <div className="flex h-16 items-center justify-between">
           {/* Mobile Menu Button */}
           <button
-            className="md:hidden rounded-md p-2 text-neutral-400 hover:bg-neutral-800 hover:text-white"
+            className="md:hidden rounded-md p-2 text-neutral-400 hover:text-[rgb(var(--navItem))]"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           >
             <Menu size={24} />
@@ -68,13 +68,13 @@ const Navbar: React.FC = () => {
 
       {/* Mobile Navigation Menu */}
       {isMobileMenuOpen && (
-        <div className="md:hidden bg-background-light border-t border-neutral-800">
+        <div className="md:hidden bg-[rgb(var(--background-light))] border-t border-neutral-800">
           <nav className="flex flex-col p-4 space-y-4">
             <a
               className={`p-2 rounded-lg ${
                 location.pathname === "/"
                   ? "bg-primary/20 text-primary"
-                  : "text-neutral-300"
+                  : "text-neutral-400 hover:text-[rgb(var(--navItem))]"
               }`}
               href="#"
               onClick={(e) => {
@@ -89,7 +89,7 @@ const Navbar: React.FC = () => {
               className={`p-2 rounded-lg ${
                 location.pathname === "/send-receive"
                   ? "bg-primary/20 text-primary"
-                  : "text-neutral-300"
+                  : "text-neutral-400 hover:text-[rgb(var(--navItem))]"
               }`}
               href="#"
               onClick={(e) => {
@@ -104,7 +104,7 @@ const Navbar: React.FC = () => {
               className={`p-2 rounded-lg ${
                 location.pathname === "/send-receive"
                   ? "bg-primary/20 text-primary"
-                  : "text-neutral-300"
+                  : "text-neutral-400 hover:text-[rgb(var(--navItem))]"
               }`}
               href="#"
               onClick={(e) => {
@@ -119,7 +119,7 @@ const Navbar: React.FC = () => {
               className={`p-2 rounded-lg ${
                 location.pathname === "/transactions"
                   ? "bg-primary/20 text-primary"
-                  : "text-neutral-300"
+                  : "text-neutral-400 hover:text-[rgb(var(--navItem))]"
               }`}
               href="#"
               onClick={(e) => {
@@ -134,7 +134,7 @@ const Navbar: React.FC = () => {
               className={`p-2 rounded-lg ${
                 location.pathname === "/transactions"
                   ? "bg-primary/20 text-primary"
-                  : "text-neutral-300"
+                  : "text-neutral-400 hover:text-[rgb(var(--navItem))]"
               }`}
               href="#"
               onClick={(e) => {
@@ -149,7 +149,7 @@ const Navbar: React.FC = () => {
               className={`p-2 rounded-lg ${
                 location.pathname === "/settings"
                   ? "bg-primary/20 text-primary"
-                  : "text-neutral-300"
+                  : "text-neutral-400 hover:text-[rgb(var(--navItem))]"
               }`}
               href="#"
               onClick={(e) => {

@@ -8,6 +8,8 @@ import { formatCurrency, formatCrypto } from "../../utils/formatters";
 import { usePriceChart } from "../../context/PriceChartContext";
 import { useWalletStore } from "../../store/walletStore";
 import TokenIcon from "../ui/TokenIcon";
+import { useTranslation } from "react-i18next";
+import { useSettingsStore } from "../../store/settingsStore";
 
 type SortBy = "name" | "quantity" | "value";
 type SortOrder = "asc" | "desc";
@@ -22,6 +24,9 @@ const TokenList: React.FC = () => {
   const [sortOrder, setSortOrder] = useState<SortOrder>("desc");
   const [loading, setLoading] = useState(false);
   const hasLoaded = useRef(false); // to prevent double fetch
+
+  const { t } = useTranslation();
+  const { currency } = useSettingsStore();
 
   useEffect(() => {
     if (
@@ -142,11 +147,11 @@ const TokenList: React.FC = () => {
   return (
     <Card className="w-full">
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-lg font-medium">Assets</h2>
+        <h2 className="text-lg font-medium">{t("assets.title")}</h2>
         <input
           type="text"
           className="input py-1 px-3 text-sm"
-          placeholder="Search assets..."
+          placeholder={t("assets.searchPlaceholder")}
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
         />
@@ -155,26 +160,30 @@ const TokenList: React.FC = () => {
       {/* Scrollable wrapper */}
       <div className="max-h-[190px] overflow-y-auto">
         <table className="w-full text-sm text-left">
-          <thead className="text-neutral-500 sticky top-0 bg-[#1e293b] z-10">
+          <thead className="bg-[rgb(var(--background-medium))] sticky top-0 text-[rgb(var(--text))] z-10">
             <tr>
               <th
                 className="cursor-pointer px-3 py-2"
                 onClick={() => handleSort("name")}
+                aria-label={t("assets.sortByName")}
               >
-                Name {sortBy === "name" && (sortOrder === "asc" ? "↑" : "↓")}
+                {t("assets.name")}{" "}
+                {sortBy === "name" && (sortOrder === "asc" ? "↑" : "↓")}
               </th>
               <th
                 className="cursor-pointer px-3 py-2 text-right"
                 onClick={() => handleSort("quantity")}
+                aria-label={t("assets.sortByBalance")}
               >
-                Balance{" "}
+                {t("assets.balance")}{" "}
                 {sortBy === "quantity" && (sortOrder === "asc" ? "↑" : "↓")}
               </th>
               <th
                 className="cursor-pointer px-3 py-2 text-right"
                 onClick={() => handleSort("value")}
+                aria-label={t("assets.sortByValue")}
               >
-                Value (USD){" "}
+                {t("assets.value", { currency })}{" "}
                 {sortBy === "value" && (sortOrder === "asc" ? "↑" : "↓")}
               </th>
             </tr>
@@ -183,14 +192,14 @@ const TokenList: React.FC = () => {
             {loading ? (
               <tr>
                 <td colSpan={3} className="text-center py-6 text-neutral-400">
-                  Loading...
+                  {t("assets.loading")}
                 </td>
               </tr>
             ) : filteredTokens.length > 0 ? (
               filteredTokens.map((token, idx) => (
                 <tr
                   key={idx}
-                  className="hover:bg-neutral-800/50 cursor-pointer transition-all duration-200"
+                  className="hover:bg-[rgb(var(--background-medium))] cursor-pointer transition-all duration-200"
                 >
                   <td className="px-3 py-3 flex items-center space-x-3">
                     <TokenIcon
@@ -199,22 +208,24 @@ const TokenList: React.FC = () => {
                       size="sm"
                     />
                     <div>
-                      <p className="font-medium">{token.symbol}</p>
+                      <p className="font-medium text-[rgb(var(--text))]">
+                        {token.symbol}
+                      </p>
                       <p className="text-xs text-neutral-400">{token.name}</p>
                     </div>
                   </td>
-                  <td className="px-3 py-3 text-right">
+                  <td className="px-3 py-3 text-right text-[rgb(var(--text))]">
                     {formatCrypto(token.balance, token.symbol)}
                   </td>
-                  <td className="px-3 py-3 text-right">
-                    {formatCurrency(token.balance * token.price)}
+                  <td className="px-3 py-3 text-right text-[rgb(var(--text))]">
+                    {formatCurrency(token.balance * token.price, currency)}
                   </td>
                 </tr>
               ))
             ) : (
               <tr>
                 <td colSpan={3} className="text-center py-6 text-neutral-400">
-                  No assets found.
+                  {t("assets.noAssetsFound")}
                 </td>
               </tr>
             )}

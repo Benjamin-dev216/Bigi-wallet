@@ -20,12 +20,11 @@ const Card: React.FC<CardProps> = ({
   ...props
 }) => {
   const baseStyles =
-    "rounded-xl shadow-card transition-all duration-200 min-h-[240px]";
+    "rounded-xl shadow-card transition-all duration-200 min-h-[240px] card";
 
   const variantStyles = {
-    default: "bg-background-light border border-neutral-800",
-    glass:
-      "bg-background-light/30 backdrop-blur-md border border-neutral-800/50",
+    default: "border border-neutral-800",
+    glass: "backdrop-blur-md border border-neutral-800/50",
     outline: "bg-transparent border border-neutral-700",
   };
 
