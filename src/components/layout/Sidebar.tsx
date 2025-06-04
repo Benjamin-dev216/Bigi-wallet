@@ -8,12 +8,15 @@ import {
   Repeat,
   MessageSquare,
 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 const Sidebar: React.FC = () => {
+  const { t } = useTranslation();
+
   return (
-    <aside className="w-full h-full bg-[rgb(var(--background-light))]  flex flex-col">
+    <aside className="w-full h-full bg-[rgb(var(--background-light))] flex flex-col">
       {/* Logo */}
-      <div className="p-6 ">
+      <div className="p-6">
         <div className="flex items-center space-x-2">
           <Wallet className="h-6 w-6 text-primary" />
           <span className="text-xl font-bold gradient-text">BigiWallet</span>
@@ -22,31 +25,39 @@ const Sidebar: React.FC = () => {
 
       {/* Navigation */}
       <nav className="flex-1 px-4 py-6 space-y-1">
-        <NavItem to="/" icon={<Wallet size={20} />} label="Dashboard" />
+        <NavItem
+          to="/"
+          icon={<Wallet size={20} />}
+          label={t("sidebar.dashboard")}
+        />
         <NavItem
           to="/send-receive/send"
           icon={<Send size={20} />}
-          label="Send & Receive"
+          label={t("sidebar.sendReceive")}
         />
-        <NavItem to="/swap" icon={<Repeat size={20} />} label="Swap" />
+        <NavItem
+          to="/swap"
+          icon={<Repeat size={20} />}
+          label={t("sidebar.swap")}
+        />
         <NavItem
           to="/transactions"
           icon={<ListHistory size={20} />}
-          label="Transactions"
+          label={t("sidebar.transactions")}
         />
         <NavItem
           to="/support"
           icon={<MessageSquare size={20} />}
-          label="Support"
+          label={t("sidebar.support")}
         />
       </nav>
 
       {/* Bottom Navigation */}
-      <div className="p-4 ">
+      <div className="p-4">
         <NavItem
           to="/settings"
           icon={<Settings size={20} />}
-          label="Settings"
+          label={t("sidebar.settings")}
         />
       </div>
     </aside>

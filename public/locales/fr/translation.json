@@ -72,7 +72,9 @@
     "cancel": "Annuler",
     "confirm": "Confirmer",
     "save": "Enregistrer",
-    "close": "Fermer"
+    "close": "Fermer",
+    "clear": "Effacer",
+    "done": "Terminé"
   },
   "balanceCard": {
     "balance": {
@@ -143,8 +145,8 @@
     }
   },
   "recipientAddress": {
-    "label": "Adresse du destinataire ({network})",
-    "placeholder": "Entrez une adresse {network}",
+    "label": "Adresse du destinataire",
+    "placeholder": "Entrez une adresse",
     "invalidEthereum": "Adresse Ethereum invalide",
     "invalidBitcoin": "Adresse Bitcoin invalide",
     "scanButton": "Scanner le code QR",
@@ -152,5 +154,123 @@
     "cameraDenied": "Accès à la caméra refusé. Veuillez l'autoriser.",
     "noCamera": "Aucune caméra trouvée sur cet appareil.",
     "cameraError": "Impossible d'accéder à la caméra."
+  },
+  "swap": {
+    "title": "Échanger des tokens",
+    "from": "De",
+    "to": "À",
+    "balance": "Solde",
+    "switchTokens": "Inverser les tokens",
+    "settings": "Paramètres",
+    "slippageTolerance": "Tolérance de slippage",
+    "custom": "Personnalisé",
+    "loading": "Chargement",
+    "approve": "Approuver",
+    "swap": "Échanger",
+    "loadingTokens": "Chargement des tokens",
+    "success": "✅ Échange réussi",
+    "errors": {
+      "connectWallet": "Connectez d'abord votre portefeuille.",
+      "insufficientBalance": "Solde insuffisant pour effectuer cet échange.",
+      "invalidQuote": "Citation invalide reçue.",
+      "permit2Failed": "Échec de la signature Permit2",
+      "insufficientEth": "Pas assez d'ETH pour couvrir l'échange et les frais de gaz.",
+      "failed": "❌ Échange échoué sur la blockchain",
+      "generic": "Échange échoué. Veuillez réessayer."
+    }
+  },
+  "transactions": {
+    "title": "Historique des transactions",
+    "searchPlaceholder": "Rechercher par token, hash, adresse",
+    "filterByDate": "Filtrer par date",
+    "all": "Tous",
+    "send": "Envoyer",
+    "received": "Reçu",
+    "sent": "Envoyé",
+    "receive": "Recevoir",
+    "swap": "Échange",
+    "noTransactions": "Aucune transaction trouvée",
+    "adjustFilters": "Essayez d'ajuster vos filtres ou votre recherche.",
+    "loading": "Chargement des transactions",
+    "pleaseWait": "Veuillez patienter un instant.",
+    "status": {
+      "confirmed": "confirmé",
+      "pending": "en attente",
+      "failed": "échoué"
+    },
+    "viewOnExplorer": "Voir sur l'explorateur"
+  },
+  "ticket": {
+    "createTitle": "Créer un ticket de support",
+    "category": "Catégorie",
+    "selectCategory": "Sélectionnez une catégorie",
+    "priority": "Priorité",
+    "priorities": {
+      "low": "Basse",
+      "medium": "Moyenne",
+      "high": "Haute",
+      "urgent": "Urgente"
+    },
+    "subject": "Sujet",
+    "subjectPlaceholder": "Brève description de votre problème",
+    "description": "Description",
+    "descriptionPlaceholder": "Explication détaillée de votre problème...",
+    "createButton": "Créer le ticket"
+  },
+  "support": {
+    "title": "Support",
+    "newTicket": "Nouveau ticket",
+    "yourTickets": "Vos tickets",
+    "conversation": "Conversation",
+    "typeMessagePlaceholder": "Tapez votre message ou faites glisser et déposez votre image",
+    "selectTicketToView": "Sélectionnez un ticket pour voir la conversation"
+  },
+  "sidebar": {
+    "dashboard": "Tableau de bord",
+    "sendReceive": "Envoyer & Recevoir",
+    "swap": "Échanger",
+    "transactions": "Transactions",
+    "support": "Support",
+    "settings": "Paramètres"
+  },
+  "navbar": {
+    "logout": "Déconnexion",
+    "dashboard": "Tableau de bord"
+  },
+  "auth": {
+    "email": "Adresse email",
+    "emailPlaceholder": "Entrez votre email",
+    "password": "Mot de passe",
+    "passwordPlaceholder": "Entrez votre mot de passe",
+    "showPassword": "Afficher le mot de passe",
+    "hidePassword": "Masquer le mot de passe",
+    "login": {
+      "title": "Content de vous revoir !",
+      "subtitle": "Connectez-vous pour accéder à votre portefeuille",
+      "button": "Se connecter",
+      "switchToRegister": "Pas de compte ? S'inscrire"
+    },
+    "register": {
+      "title": "Créer un compte",
+      "subtitle": "Inscrivez-vous pour créer votre portefeuille",
+      "button": "Créer un compte",
+      "switchToLogin": "Déjà un compte ? Se connecter"
+    },
+    "2fa": {
+      "title": "Authentification à deux facteurs",
+      "description": "Entrez le code de votre application d'authentification",
+      "placeholder": "000000",
+      "verify": "Vérifier"
+    },
+    "mnemonic": {
+      "title": "Portefeuille créé !",
+      "description": "Veuillez enregistrer votre phrase de récupération dans un endroit sécurisé. Vous en aurez besoin pour récupérer votre portefeuille.",
+      "warning": "Ne partagez jamais votre phrase de récupération avec qui que ce soit. Stockez-la hors ligne en sécurité.",
+      "continue": "Continuer vers le portefeuille"
+    },
+    "errors": {
+      "generic": "Une erreur est survenue",
+      "invalid2FA": "Code 2FA invalide"
+    }
   }
 }

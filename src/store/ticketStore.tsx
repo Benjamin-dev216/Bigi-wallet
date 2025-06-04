@@ -79,7 +79,7 @@ export const useTicketStore = create<TicketStore>()(
         set({ loading: true, error: null });
         try {
           const { data, error } = await supabase
-            .from("active_user_tickets")
+            .from("tickets")
             .select("*")
             .order("created_at", { ascending: false });
 
@@ -172,6 +172,9 @@ export const useTicketStore = create<TicketStore>()(
         imageUrl = ""
       ) => {
         set({ loading: true, error: null });
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
         try {
           const { data, error } = await supabase
             .from("ticket_messages")
@@ -179,7 +182,7 @@ export const useTicketStore = create<TicketStore>()(
               {
                 ticket_id: ticketId,
                 message,
-                sender_id: (await supabase.auth.getUser()).data.user?.id,
+                sender_id: user?.id,
                 is_admin: isAdmin ?? false,
                 image_url: imageUrl,
               },

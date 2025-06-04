@@ -57,7 +57,7 @@ const TicketList: React.FC = () => {
       {tickets.map((ticket) => (
         <div
           key={ticket.id}
-          className="bg-background-light p-4 rounded-lg border border-neutral-800 hover:border-neutral-700 transition-all cursor-pointer"
+          className="bg-[rgb(var(--background-light))] p-4 rounded-lg border hover:border-neutral-700 transition-all cursor-pointer"
           onClick={() => selectTicket(ticket)}
         >
           <div className="flex items-start justify-between">

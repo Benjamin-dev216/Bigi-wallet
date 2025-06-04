@@ -3,11 +3,12 @@ import { supabase } from "../store/authStore";
 
 export async function fetchUserTokens(
   ethAddress: string,
-  btcAddress: string
+  btcAddress: string,
+  currency: string
 ): Promise<{ tokens: Token[]; totalValue: number }> {
   try {
     const { data } = await supabase.functions.invoke("quick-handler", {
-      body: JSON.stringify({ ethAddress, btcAddress }),
+      body: JSON.stringify({ ethAddress, btcAddress, currency }),
     });
 
     const btcToken = {

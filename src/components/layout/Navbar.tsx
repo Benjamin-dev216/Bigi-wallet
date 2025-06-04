@@ -4,8 +4,11 @@ import { Menu, LogOut } from "lucide-react";
 import Button from "../ui/Button";
 import { useAuthStore } from "../../store/authStore";
 import { useTicketStore } from "../../store/ticketStore";
+import { useTranslation } from "react-i18next";
 
 const Navbar: React.FC = () => {
+  const { t } = useTranslation();
+
   const location = useLocation();
   const navigate = useNavigate();
   const { logout } = useAuthStore();
@@ -15,19 +18,19 @@ const Navbar: React.FC = () => {
   const getPageTitle = () => {
     switch (location.pathname) {
       case "/":
-        return "Dashboard";
+        return t("sidebar.dashboard");
       case "/send-receive/send":
-        return "Send & Receive";
+        return t("sidebar.sendReceive");
       case "/transactions":
-        return "Transactions";
+        return t("sidebar.transactions");
       case "/markets":
         return "Markets";
       case "/settings":
-        return "Settings";
+        return t("sidebar.settings");
       case "/swap":
-        return "Swap";
+        return t("sidebar.swap");
       default:
-        return "Dashboard";
+        return t("sidebar.dashboard");
     }
   };
 
@@ -60,7 +63,7 @@ const Navbar: React.FC = () => {
               }}
             >
               <LogOut size={16} className="mr-1" />
-              <span className="hidden sm:inline">Logout</span>
+              <span className="hidden sm:inline">{t("navbar.logout")}</span>
             </Button>
           </div>
         </div>
@@ -83,7 +86,7 @@ const Navbar: React.FC = () => {
                 setIsMobileMenuOpen(false);
               }}
             >
-              Dashboard
+              {t("sidebar.dashboard")}
             </a>
             <a
               className={`p-2 rounded-lg ${
@@ -98,7 +101,7 @@ const Navbar: React.FC = () => {
                 setIsMobileMenuOpen(false);
               }}
             >
-              Send & Receive
+              {t("sidebar.sendReceive")}
             </a>
             <a
               className={`p-2 rounded-lg ${
@@ -113,7 +116,7 @@ const Navbar: React.FC = () => {
                 setIsMobileMenuOpen(false);
               }}
             >
-              Swap
+              {t("sidebar.swap")}
             </a>
             <a
               className={`p-2 rounded-lg ${
@@ -128,7 +131,7 @@ const Navbar: React.FC = () => {
                 setIsMobileMenuOpen(false);
               }}
             >
-              Transactions
+              {t("sidebar.transactions")}
             </a>
             <a
               className={`p-2 rounded-lg ${
@@ -143,7 +146,7 @@ const Navbar: React.FC = () => {
                 setIsMobileMenuOpen(false);
               }}
             >
-              Support
+              {t("sidebar.support")}
             </a>
             <a
               className={`p-2 rounded-lg ${
@@ -158,7 +161,7 @@ const Navbar: React.FC = () => {
                 setIsMobileMenuOpen(false);
               }}
             >
-              Settings
+              {t("sidebar.settings")}
             </a>
           </nav>
         </div>

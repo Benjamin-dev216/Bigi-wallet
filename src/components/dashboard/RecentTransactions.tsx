@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import Card from "../ui/Card";
-import { ArrowUpRight, ArrowDownRight } from "lucide-react";
+import { ArrowUpRight, ArrowDownRight, ExternalLink } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import {
   formatDateTime,
@@ -112,8 +112,18 @@ const RecentTransactions: React.FC = () => {
                     {isReceive ? "+" : ""}{" "}
                     {formatAmount(tx.amount, tx.symbol, tx.chain)}
                   </p>
-                  <p className="text-xs text-neutral-400">
+                  <p className="flex items-center text-xs text-neutral-400 float-right">
                     {formatAddress(tx.counterAddress)}
+                    {tx.hash && (
+                      <a
+                        href={`https://etherscan.io/tx/${tx.hash}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="ml-2 text-primary hover:text-primary-light"
+                      >
+                        <ExternalLink size={12} />
+                      </a>
+                    )}
                   </p>
                 </div>
               </div>

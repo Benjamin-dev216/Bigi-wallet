@@ -66,7 +66,7 @@ const RecipientAddressInput: React.FC<Props> = ({
   return (
     <div className="relative w-full">
       <label className="block text-sm font-medium text-[rgb(var(--text))] mb-2">
-        {t("recipientAddress.label", { network: t(`common.${network}`) })}
+        {t("recipientAddress.label")} {network}
       </label>
 
       <div className="relative flex items-center gap-2">

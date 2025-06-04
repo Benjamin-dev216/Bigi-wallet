@@ -1,13 +1,19 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useTicketStore } from "../../store/ticketStore";
 import { formatDistance } from "date-fns";
+import { enUS, fr, de } from "date-fns/locale";
 import { Send, Image as ImageIcon, X } from "lucide-react";
 import { useAuthStore } from "../../store/authStore";
 import { useDropzone } from "react-dropzone";
 import { v4 as uuidv4 } from "uuid";
 import { supabase } from "../../store/authStore";
+import { useTranslation } from "react-i18next";
+import { useSettingsStore } from "../../store/settingsStore";
 
 const TicketChat: React.FC = () => {
+  const { t } = useTranslation();
+
+  const { language } = useSettingsStore();
   const { selectedTicket, messages, fetchMessages, sendMessage } =
     useTicketStore();
   const { user } = useAuthStore();
@@ -98,7 +104,7 @@ const TicketChat: React.FC = () => {
   if (!selectedTicket) {
     return (
       <div className="h-full flex items-center justify-center text-neutral-400">
-        Select a ticket to view the conversation
+        {t("support.selectTicketToView")}
       </div>
     );
   }
@@ -138,7 +144,7 @@ const TicketChat: React.FC = () => {
                   className={`max-w-[70%] rounded-lg p-3 ${
                     isCurrentUser
                       ? "bg-primary text-white"
-                      : "bg-neutral-700 text-neutral-100"
+                      : "bg-[rgb(var(--scroll-light))] text-[rgb(var(--text))]"
                   }`}
                 >
                   {message.image_url && (
@@ -161,6 +167,8 @@ const TicketChat: React.FC = () => {
                   <p className="text-xs mt-1 opacity-75">
                     {formatDistance(new Date(message.created_at), new Date(), {
                       addSuffix: true,
+                      locale:
+                        language === "en" ? enUS : language === "de" ? de : fr,
                     })}
                   </p>
                 </div>
@@ -206,7 +214,7 @@ const TicketChat: React.FC = () => {
             <button
               type="button"
               onClick={() => fileInputRef.current?.click()}
-              className="px-2 py-3 bg-neutral-700 hover:bg-neutral-600 text-white rounded-lg transition-colors"
+              className="px-2 py-3 bg-[rgb(var(--scroll-light))] text-[rgb(var(--text))] rounded-lg transition-colors"
             >
               <ImageIcon size={20} />
             </button>
@@ -216,7 +224,7 @@ const TicketChat: React.FC = () => {
             className="input flex-1"
             value={newMessage}
             onChange={(e) => setNewMessage(e.target.value)}
-            placeholder="Type your message or Drag & drop your image"
+            placeholder={t("support.typeMessagePlaceholder")}
             disabled={uploading}
           />
           <button

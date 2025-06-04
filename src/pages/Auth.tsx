@@ -13,8 +13,10 @@ import Card from "../components/ui/Card";
 import Button from "../components/ui/Button";
 import { useAuthStore } from "../store/authStore";
 import { Toaster } from "react-hot-toast";
+import { useTranslation } from "react-i18next";
 
 const Auth: React.FC = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { login, register, setJustRegistered, mnemonic, needs2FA, verify2FA } =
     useAuthStore();
@@ -35,14 +37,13 @@ const Auth: React.FC = () => {
       if (isLogin) {
         await login(email, password);
         if (!needs2FA) {
-          navigate("/"); // Only navigate if 2FA is not required
+          navigate("/");
         }
       } else {
         await register(email, password);
-        // Don't navigate! Wait for user to see mnemonic and click "Continue"
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : "An error occurred");
+      setError(err instanceof Error ? err.message : t("auth.errors.generic"));
     } finally {
       setLoading(false);
     }
@@ -57,7 +58,9 @@ const Auth: React.FC = () => {
       await verify2FA(twoFactorCode);
       navigate("/");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Invalid 2FA code");
+      setError(
+        err instanceof Error ? err.message : t("auth.errors.invalid2FA")
+      );
     } finally {
       setLoading(false);
     }
@@ -65,18 +68,16 @@ const Auth: React.FC = () => {
 
   if (needs2FA) {
     return (
-      <div className="min-h-screen flex items-center justify-center p-4 bg-background">
+      <div className="min-h-screen flex items-center justify-center p-4 bg-[rgb(var(--background-light))]">
         <div className="w-full max-w-md">
           <Card className="animate-fade-in">
             <div className="text-center mb-6">
               <div className="inline-block p-3 rounded-full bg-primary/20 mb-4">
                 <KeyRound className="w-8 h-8 text-primary" />
               </div>
-              <h1 className="text-2xl font-bold mb-2">
-                Two-Factor Authentication
-              </h1>
-              <p className="text-neutral-400">
-                Enter the code from your authenticator app
+              <h1 className="text-2xl font-bold mb-2">{t("auth.2fa.title")}</h1>
+              <p className="text-[rgb(var(--text))]">
+                {t("auth.2fa.description")}
               </p>
             </div>
 
@@ -94,7 +95,7 @@ const Auth: React.FC = () => {
                   className="input w-full text-center text-2xl tracking-wider"
                   value={twoFactorCode}
                   onChange={(e) => setTwoFactorCode(e.target.value)}
-                  placeholder="000000"
+                  placeholder={t("auth.2fa.placeholder")}
                   maxLength={6}
                   pattern="[0-9]*"
                   inputMode="numeric"
@@ -109,7 +110,7 @@ const Auth: React.FC = () => {
                 fullWidth
                 isLoading={loading}
               >
-                Verify
+                {t("auth.2fa.verify")}
               </Button>
             </form>
           </Card>
@@ -119,7 +120,7 @@ const Auth: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-background">
+    <div className="min-h-screen flex items-center justify-center p-4 bg-[rgb(var(--background))]">
       <div className="w-full max-w-md">
         {mnemonic ? (
           <Card className="animate-fade-in">
@@ -127,10 +128,11 @@ const Auth: React.FC = () => {
               <div className="inline-block p-3 rounded-full bg-success/20 mb-4">
                 <Wallet className="w-8 h-8 text-success" />
               </div>
-              <h1 className="text-2xl font-bold mb-2">Wallet Created!</h1>
-              <p className="text-neutral-400">
-                Please save your recovery phrase in a secure location. You'll
-                need it to recover your wallet.
+              <h1 className="text-2xl font-bold mb-2">
+                {t("auth.mnemonic.title")}
+              </h1>
+              <p className="text-[rgb(var(--text))]">
+                {t("auth.mnemonic.description")}
               </p>
             </div>
 
@@ -138,13 +140,12 @@ const Auth: React.FC = () => {
               <div className="flex items-start">
                 <AlertCircle className="w-5 h-5 text-warning mt-0.5 mr-2" />
                 <p className="text-sm text-warning">
-                  Never share your recovery phrase with anyone. Store it
-                  securely offline.
+                  {t("auth.mnemonic.warning")}
                 </p>
               </div>
             </div>
 
-            <div className="bg-neutral-800/50 rounded-lg p-4 mb-6">
+            <div className="bg-[rgb(var(--background-light))] rounded-lg p-4 mb-6">
               <div className="grid grid-cols-3 gap-2">
                 {mnemonic.split(" ").map((word, index) => (
                   <div
@@ -166,7 +167,7 @@ const Auth: React.FC = () => {
                 navigate("/");
               }}
             >
-              Continue to Wallet
+              {t("auth.mnemonic.continue")}
             </Button>
           </Card>
         ) : (
@@ -176,12 +177,12 @@ const Auth: React.FC = () => {
                 <KeyRound className="w-8 h-8 text-primary" />
               </div>
               <h1 className="text-2xl font-bold mb-2">
-                {isLogin ? "Welcome Back!" : "Create Account"}
+                {isLogin ? t("auth.login.title") : t("auth.register.title")}
               </h1>
               <p className="text-neutral-400">
                 {isLogin
-                  ? "Sign in to access your wallet"
-                  : "Register to create your wallet"}
+                  ? t("auth.login.subtitle")
+                  : t("auth.register.subtitle")}
               </p>
             </div>
 
@@ -194,8 +195,8 @@ const Auth: React.FC = () => {
               )}
 
               <div>
-                <label className="block text-sm font-medium text-neutral-300 mb-2">
-                  Email Address
+                <label className="block text-sm font-medium text-[rgb(var(--text))] mb-2">
+                  {t("auth.email")}
                 </label>
                 <div className="relative">
                   <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-neutral-400" />
@@ -204,15 +205,15 @@ const Auth: React.FC = () => {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     className="input pl-10 w-full"
-                    placeholder="Enter your email"
+                    placeholder={t("auth.emailPlaceholder")}
                     required
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-neutral-300 mb-2">
-                  Password
+                <label className="block text-sm font-medium text-[rgb(var(--text))] mb-2">
+                  {t("auth.password")}
                 </label>
                 <div className="relative">
                   <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-neutral-400" />
@@ -221,13 +222,18 @@ const Auth: React.FC = () => {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     className="input pl-10 pr-10 w-full"
-                    placeholder="Enter your password"
+                    placeholder={t("auth.passwordPlaceholder")}
                     required
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
                     className="absolute right-3 top-1/2 transform -translate-y-1/2 text-neutral-400 hover:text-white"
+                    aria-label={
+                      showPassword
+                        ? t("auth.hidePassword")
+                        : t("auth.showPassword")
+                    }
                   >
                     {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                   </button>
@@ -240,7 +246,7 @@ const Auth: React.FC = () => {
                 fullWidth
                 isLoading={loading}
               >
-                {isLogin ? "Sign In" : "Create Account"}
+                {isLogin ? t("auth.login.button") : t("auth.register.button")}
               </Button>
 
               <div className="text-center mt-4">
@@ -250,8 +256,8 @@ const Auth: React.FC = () => {
                   className="text-primary hover:text-primary-light text-sm"
                 >
                   {isLogin
-                    ? "Don't have an account? Sign Up"
-                    : "Already have an account? Sign In"}
+                    ? t("auth.login.switchToRegister")
+                    : t("auth.register.switchToLogin")}
                 </button>
               </div>
             </form>

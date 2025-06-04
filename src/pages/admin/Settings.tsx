@@ -1,17 +1,23 @@
 import React, { useState } from "react";
-import { Save, RefreshCw, Shield, Bell } from "lucide-react";
+import {
+  Save,
+  RefreshCw,
+  Shield,
+  Globe2,
+  Coins,
+  Moon,
+  Sun,
+} from "lucide-react";
 import Card from "../../components/ui/Card";
 import Button from "../../components/ui/Button";
 import toast from "react-hot-toast";
 import { supabase } from "../../store/authStore";
+import { useSettingsStore } from "../../store/settingsStore";
 
 const Settings: React.FC = () => {
-  const [passwords, setPasswords] = useState({ new: "", confirm: "" });
+  const { currency, theme, setCurrency, setTheme } = useSettingsStore();
 
-  const [notificationSettings, setNotificationSettings] = useState({
-    newUsers: true,
-    supportTickets: true,
-  });
+  const [passwords, setPasswords] = useState({ new: "", confirm: "" });
 
   const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -39,6 +45,72 @@ const Settings: React.FC = () => {
 
       <Card>
         <h2 className="text-lg font-semibold mb-6 flex items-center">
+          <Globe2 size={20} className="mr-2 text-primary" />
+          Settings
+        </h2>
+
+        <div className="space-y-6">
+          {/* Currency Selection */}
+          <div>
+            <label className="block text-sm font-medium text-[rgb(var(--text))] mb-2">
+              Currency
+            </label>
+            <div className="flex items-center space-x-3">
+              {["USD", "EUR", "GBP"].map((curr) => {
+                const isActive = currency === curr;
+                return (
+                  <button
+                    key={curr}
+                    onClick={() => setCurrency(curr as any)}
+                    className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-all font-medium ${
+                      isActive
+                        ? "bg-primary text-white"
+                        : "bg-[rgb(var(--background-light))] text-[rgb(var(--text))] hover:bg-primary/20"
+                    }`}
+                  >
+                    <Coins size={16} />
+                    <span>{curr}</span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Theme Selection */}
+          <div>
+            <label className="block text-sm font-medium  mb-2 text-[rgb(var(--text))]">
+              Theme
+            </label>
+            <div className="flex items-center space-x-3">
+              <button
+                onClick={() => setTheme("dark")}
+                className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-all font-medium ${
+                  theme === "dark"
+                    ? "bg-primary text-white"
+                    : "hover:bg-primary/20 bg-[rgb(var(--background-light))] text-[rgb(var(--text))]"
+                }`}
+              >
+                <Moon size={16} />
+                <span>Dark</span>
+              </button>
+              <button
+                onClick={() => setTheme("light")}
+                className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-all ${
+                  theme === "light"
+                    ? "bg-primary text-white"
+                    : "hover:bg-primary/20 bg-[rgb(var(--background-light))] text-[rgb(var(--text))]"
+                }`}
+              >
+                <Sun size={16} />
+                <span>Light</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </Card>
+
+      <Card>
+        <h2 className="text-lg font-semibold mb-6 flex items-center">
           <Shield size={20} className="mr-2 text-primary" />
           Security
         </h2>
@@ -46,7 +118,7 @@ const Settings: React.FC = () => {
         <div className="space-y-6">
           {/* Password Change */}
           <div>
-            <label className="block text-sm font-medium text-neutral-300 mb-2">
+            <label className="block text-sm font-medium text-[rgb(var(--text))] mb-2">
               Change Password
             </label>
             <div className="space-y-3">
@@ -77,48 +149,6 @@ const Settings: React.FC = () => {
               <Save size={16} className="mr-2" />
               Save Changes
             </Button>
-          </div>
-        </div>
-      </Card>
-      <Card>
-        <div className="space-y-6">
-          <div className="flex items-center space-x-2">
-            <Bell className="text-primary" size={24} />
-            <h2 className="text-lg font-semibold">Notification Settings</h2>
-          </div>
-
-          <div className="space-y-4">
-            {Object.entries(notificationSettings).map(([key, value]) => (
-              <div key={key} className="flex items-center justify-between">
-                <div>
-                  <p className="font-medium">
-                    {key
-                      .replace(/([A-Z])/g, " $1")
-                      .replace(/^./, (str) => str.toUpperCase())}
-                  </p>
-                  <p className="text-sm text-neutral-400">
-                    Receive notifications for{" "}
-                    {key
-                      .replace(/([A-Z])/g, " $1")
-                      .replace(/^./, (str) => str.toLowerCase())}
-                  </p>
-                </div>
-                <label className="relative inline-flex items-center cursor-pointer">
-                  <input
-                    type="checkbox"
-                    className="sr-only peer"
-                    checked={value}
-                    onChange={(e) =>
-                      setNotificationSettings((prev) => ({
-                        ...prev,
-                        [key]: e.target.checked,
-                      }))
-                    }
-                  />
-                  <div className="w-11 h-6 bg-neutral-700 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-neutral-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
-                </label>
-              </div>
-            ))}
           </div>
         </div>
       </Card>

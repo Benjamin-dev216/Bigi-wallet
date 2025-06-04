@@ -6,7 +6,6 @@ const TradingViewWidget = ({ symbol = "BTCUSD" }: { symbol?: string }) => {
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    console.log(theme);
     if (!containerRef.current) return;
 
     const script = document.createElement("script");

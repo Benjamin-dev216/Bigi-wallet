@@ -49,8 +49,8 @@ const AdminLayout: React.FC = () => {
   return (
     <div className="flex h-screen bg-background text-white">
       {/* Sidebar */}
-      <aside className="hidden md:flex md:w-64 lg:w-72 w-64 bg-background-light border-r border-neutral-800 flex flex-col">
-        <div className="p-6 border-b border-neutral-800">
+      <aside className="hidden md:flex md:w-64 lg:w-72 w-64 bg-[rgb(var(--background-light))]  flex flex-col">
+        <div className="p-6 ">
           <div className="flex items-center space-x-2">
             <Shield className="h-6 w-6 text-primary" />
             <span className="text-xl font-bold gradient-text">Admin Panel</span>
@@ -67,7 +67,7 @@ const AdminLayout: React.FC = () => {
                 ${
                   isActive
                     ? "bg-primary/20 text-primary"
-                    : "text-neutral-400 hover:text-white hover:bg-neutral-800"
+                    : "text-neutral-400 hover:text-[rgb(var(--text))] hover:bg-[rgb(var(--background))]"
                 }
               `}
               end={item.path === "/admin"}
@@ -78,7 +78,7 @@ const AdminLayout: React.FC = () => {
           ))}
         </nav>
 
-        <div className="p-4 border-t border-neutral-800">
+        <div className="p-4">
           <Button
             variant="outline"
             fullWidth
@@ -96,7 +96,7 @@ const AdminLayout: React.FC = () => {
         <Navbar />
 
         {/* Main Area */}
-        <main className="flex-1 overflow-y-auto bg-background">
+        <main className="flex-1 overflow-y-auto bg-[rgb(var(--background))]">
           <Outlet />
         </main>
       </div>
@@ -111,12 +111,12 @@ const Navbar: React.FC = () => {
 
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   return (
-    <header className="border-b border-neutral-800 bg-background-light/50 backdrop-blur-sm">
+    <header className=" bg-[rgb(var(--background-light))] backdrop-blur-sm">
       <div className="container mx-auto px-4 md:px-6">
         <div className="flex h-16 items-center justify-between">
           {/* Mobile Menu Button */}
           <button
-            className="md:hidden rounded-md p-2 text-neutral-400 hover:bg-neutral-800 hover:text-white"
+            className="md:hidden rounded-md p-2 text-neutral-400 hover:bg-[rgb(var(--background))] hover:text-[rgb(var(--text))]"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           >
             <Menu size={24} />
@@ -126,7 +126,7 @@ const Navbar: React.FC = () => {
 
       {/* Mobile Navigation Menu */}
       {isMobileMenuOpen && (
-        <div className="md:hidden bg-background-light border-t border-neutral-800">
+        <div className="md:hidden bg-[rgb(var(--background-light))] border-t border-neutral-800">
           <nav className="flex flex-col p-4 space-y-1">
             {navigation.map((item) => (
               <NavLink
@@ -137,7 +137,7 @@ const Navbar: React.FC = () => {
                   ${
                     isActive
                       ? "bg-primary/20 text-primary"
-                      : "text-neutral-400 hover:text-white hover:bg-neutral-800"
+                      : "text-neutral-400 hover:text-[rgb(var(--text))] hover:bg-neutral-800"
                   }
                 `}
                 end={item.path === "/admin"}

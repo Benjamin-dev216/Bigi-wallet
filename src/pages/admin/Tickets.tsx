@@ -134,7 +134,9 @@ const Tickets: React.FC = () => {
                   >
                     <td className="px-2 md:px-6 py-4">
                       <div>
-                        <p className="font-medium">{ticket.subject}</p>
+                        <p className="font-medium text-[rgb(var(--text))]">
+                          {ticket.subject}
+                        </p>
                         <p className="text-sm text-neutral-400">
                           {ticket.description}
                         </p>

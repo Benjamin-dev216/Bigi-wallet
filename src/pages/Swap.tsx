@@ -2,8 +2,7 @@ import React, { useState, useEffect } from "react";
 import { ArrowDownUp, Settings } from "lucide-react";
 import Card from "../components/ui/Card";
 import Button from "../components/ui/Button";
-// import TokenIcon from "../components/ui/TokenIcon";
-import { useTokens } from "../hooks/useTokens"; // dynamically fetches ERC-20 tokens
+import { useTokens } from "../hooks/useTokens";
 import { TokenSelect } from "../components/common/TokenSelect";
 import { ethers, formatUnits, parseUnits } from "ethers";
 import { provider } from "../utils/sendCrypto";
@@ -16,6 +15,8 @@ import { concat, numberToHex, size } from "viem";
 import { createWalletClient, createPublicClient, http } from "viem";
 import { mainnet } from "viem/chains";
 import { privateKeyToAccount } from "viem/accounts";
+import { useSettingsStore } from "../store/settingsStore";
+import { useTranslation } from "react-i18next";
 
 const uniswapRouterAddress = "0x000000000022D473030F116dDEE9F6B43aC78BA3";
 
@@ -23,6 +24,7 @@ const MAX_APPROVE_AMOUNT =
   "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff";
 
 const Swap: React.FC = () => {
+  const { t } = useTranslation();
   const { tokens, isLoading: tokensLoading } = useTokens();
   const { wallets } = useAuthStore();
   const { data: hash, isPending } = useWriteContract();
@@ -39,6 +41,8 @@ const Swap: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [approve, setApprove] = useState(false);
   const PRIVATE_KEY = wallets?.ethereum.privateKey;
+
+  const { theme } = useSettingsStore();
 
   const account = privateKeyToAccount(PRIVATE_KEY as any);
   const walletClient = createWalletClient({
@@ -88,7 +92,7 @@ const Swap: React.FC = () => {
     try {
       const userAddress = wallets?.ethereum?.address;
       if (!userAddress) {
-        toast.error("Connect your wallet first.");
+        toast.error(t("swap.errors.connectWallet"));
         return;
       }
       const safeValue = truncateDecimals(fromAmount, fromToken.decimals);
@@ -97,7 +101,7 @@ const Swap: React.FC = () => {
       // 1. Check balance
       const balance = fromToken.balance;
       if (parseFloat(fromAmount || "0") > parseFloat(balance || "0")) {
-        toast.error("You don't have enough balance to perform this swap.");
+        toast.error(t("swap.errors.insufficientBalance"));
         return;
       }
 
@@ -142,7 +146,7 @@ const Swap: React.FC = () => {
 
       const quote = quoteRes.data;
       if (!quote || !quote.transaction?.to || !quote.transaction?.data) {
-        throw new Error("Invalid quote received.");
+        throw new Error(t("swap.errors.invalidQuote"));
       }
 
       // 4. Permit2 if applicable
@@ -164,7 +168,7 @@ const Swap: React.FC = () => {
           ]);
         } catch (err) {
           console.error("❌ Permit2 signature error", err);
-          throw new Error("Permit2 signing failed");
+          throw new Error(t("swap.errors.permit2Failed"));
         }
       }
 
@@ -187,26 +191,26 @@ const Swap: React.FC = () => {
       const txValue = tx.value ?? 0n;
 
       if (ethBalance < txValue + estimatedFee) {
-        toast.error("Not enough ETH to cover swap and gas fees.");
+        toast.error(t("swap.errors.insufficientEth"));
         setLoading(false);
         return;
       }
-      const txHash = await walletClient.sendTransaction(tx); // custom wallet function
+      const txHash = await walletClient.sendTransaction(tx);
       const receipt = await publicClient.waitForTransactionReceipt({
         hash: txHash,
         confirmations: 1,
       });
 
       if (receipt.status === "success") {
-        toast.success("✅ Swap successful");
+        toast.success(t("swap.success"));
         setFromAmount("");
         setToAmount("");
       } else {
-        toast.error("❌ Swap failed on-chain");
+        toast.error(t("swap.errors.failed"));
       }
     } catch (err: any) {
       console.error("Swap error:", err);
-      toast.error("Swap failed. Please try again.");
+      toast.error(t("swap.errors.generic"));
     } finally {
       setLoading(false);
     }
@@ -217,6 +221,7 @@ const Swap: React.FC = () => {
     setFromToken(toToken);
     setToToken(fromToken);
   };
+
   function truncateDecimals(value: string, decimals: number): string {
     const [intPart, decPart = ""] = value.split(".");
     const truncatedDec = decPart.slice(0, decimals);
@@ -227,8 +232,10 @@ const Swap: React.FC = () => {
     return (
       <div className="max-w-xl mx-auto pt-10">
         <Card className="w-full p-6 h-[526px] flex flex-col items-center justify-center">
-          <MoonLoader color="white" />
-          <div>Loading tokens</div>
+          <MoonLoader color={theme === "dark" ? "white" : "black"} />
+          <div className="text-[rgb(var(--text))]">
+            {t("swap.loadingTokens")}
+          </div>
         </Card>
       </div>
     );
@@ -254,6 +261,7 @@ const Swap: React.FC = () => {
       console.error(err);
     }
   };
+
   const handleFromAmountChange = async (value: any) => {
     setFromAmount(value);
     try {
@@ -267,19 +275,22 @@ const Swap: React.FC = () => {
     <div className="max-w-xl mx-auto pb-8 pt-10">
       <Card className="w-full p-3 md:p-6">
         <div className="flex justify-between items-center mb-6">
-          <h2 className="text-xl font-bold">Swap Tokens</h2>
+          <h2 className="text-xl font-bold">{t("swap.title")}</h2>
           <button
             onClick={() => setShowSettings(!showSettings)}
-            className="p-2 hover:bg-neutral-800 rounded-lg transition-colors"
+            className="p-2 rounded-lg transition-colors"
+            aria-label={t("swap.settings")}
           >
             <Settings size={20} className="text-neutral-400" />
           </button>
         </div>
 
         {showSettings && (
-          <div className="mb-6 p-4 bg-neutral-800/30 rounded-lg">
-            <h3 className="text-sm font-medium mb-3">Slippage Tolerance</h3>
-            <div className="flex space-x-2">
+          <div className="mb-6 p-4 bg-[rgb(var(--background-light))] rounded-lg">
+            <h3 className="text-sm font-medium mb-3">
+              {t("swap.slippageTolerance")}
+            </h3>
+            <div className="flex space-x-2 bg-[rgb(var(--background-light))]">
               {["0.1", "0.5", "1.0"].map((value, idx) => (
                 <button
                   key={idx}
@@ -287,7 +298,7 @@ const Swap: React.FC = () => {
                   className={`px-3 py-1 rounded-lg text-sm ${
                     slippage === value
                       ? "bg-primary text-white"
-                      : "bg-neutral-700 text-neutral-300 hover:bg-neutral-600"
+                      : "text-neutral-500 hover:text-[rgb(var(--text))]"
                   }`}
                 >
                   {value}%
@@ -299,7 +310,7 @@ const Swap: React.FC = () => {
                   value={slippage}
                   onChange={(e) => setSlippage(e.target.value)}
                   className="input w-full pr-8 text-sm"
-                  placeholder="Custom"
+                  placeholder={t("swap.custom")}
                 />
                 <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-neutral-400">
                   %
@@ -311,8 +322,8 @@ const Swap: React.FC = () => {
 
         {/* From Token */}
         <div className="mb-2">
-          <label className="block text-sm font-medium text-neutral-300 mb-2">
-            From
+          <label className="block text-sm font-medium text-[rgb(var(--text))] mb-2">
+            {t("swap.from")}
           </label>
           <TokenSelect
             tokens={tokens}
@@ -331,8 +342,8 @@ const Swap: React.FC = () => {
               {fromToken.symbol}
             </div>
           </div>
-          <p className="text-sm text-neutral-400 mt-1">
-            Balance: {fromToken.balance ? fromToken.balance : "0.0"}
+          <p className="text-sm text-[rgb(var(--text))] mt-1">
+            {t("swap.balance")}: {fromToken.balance ? fromToken.balance : "0.0"}
             {" " + fromToken.symbol}
           </p>
         </div>
@@ -340,7 +351,8 @@ const Swap: React.FC = () => {
         <div className="flex justify-center my-4">
           <button
             onClick={switchTokens}
-            className="p-2 rounded-full bg-neutral-800 hover:bg-neutral-700 transition-colors"
+            className="p-2 rounded-full bg-[rgb(var(--background-light))] hover:bg-[rgb(var(--background))] transition-colors"
+            aria-label={t("swap.switchTokens")}
           >
             <ArrowDownUp size={20} className="text-neutral-400" />
           </button>
@@ -348,8 +360,8 @@ const Swap: React.FC = () => {
 
         {/* To Token */}
         <div className="mb-6">
-          <label className="block text-sm font-medium text-neutral-300 mb-2">
-            To
+          <label className="block text-sm font-medium text-[rgb(var(--text))] mb-2">
+            {t("swap.to")}
           </label>
           <TokenSelect
             tokens={tokens}
@@ -384,7 +396,11 @@ const Swap: React.FC = () => {
           }
           onClick={handleSwap}
         >
-          {isConfirming || isPending ? "Loading" : approve ? "Approve" : "Swap"}
+          {isConfirming || isPending
+            ? t("swap.loading")
+            : approve
+            ? t("swap.approve")
+            : t("swap.swap")}
         </Button>
       </Card>
       <Toaster position="top-center" reverseOrder={false} />

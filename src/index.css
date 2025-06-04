@@ -8,6 +8,7 @@
     --background-light: 30 41 59;
     --background-medium: 30, 41, 59;
     --button-light: 15 23 42;
+    --scroll-light: 3, 7, 18;
     --text: 248 250 252;
     --navItem: 255, 255, 255;
   }
@@ -17,6 +18,7 @@
     --background-light: 241 245 249;
     --background-medium: 30, 41, 59, 0.05;
     --button-light: 30, 41, 59, 0.05;
+    --scroll-light: 209, 213, 220;
     --text: 15 23 42;
     --navItem: 0, 0, 0;
   }
@@ -67,11 +69,11 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  @apply bg-[rgb(var(--background-medium))] rounded-full;
+  @apply bg-[rgb(var(--scroll-light))] rounded-full;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  @apply bg-[rgb(var(--button-light))];
+  @apply bg-[rgb(var(--scroll-light))];
 }
 
 /* Glass effect for cards */

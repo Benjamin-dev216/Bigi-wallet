@@ -21,6 +21,8 @@ import Spinner from "../components/common/Spinner";
 import { format } from "date-fns";
 import { DayPicker } from "react-day-picker";
 import "react-day-picker/dist/style.css";
+import { useSettingsStore } from "../store/settingsStore";
+import { useTranslation } from "react-i18next";
 
 const formatAmount = (amount: string, symbol: string, chain: string) => {
   const parsed = parseFloat(amount);
@@ -31,7 +33,9 @@ const formatAmount = (amount: string, symbol: string, chain: string) => {
 };
 
 const Transactions: React.FC = () => {
+  const { t } = useTranslation();
   const { wallets } = useAuthStore();
+  const { theme } = useSettingsStore();
 
   const PAGE_SIZE = 20;
   const [ethOffset, setEthOffset] = useState(0);
@@ -60,8 +64,8 @@ const Transactions: React.FC = () => {
     if (isFetchingRef.current) return;
     isFetchingRef.current = true;
 
-    const ethAddress = wallets.ethereum.address; // Replace with actual from store
-    const btcAddress = wallets.bitcoin.address; // Replace with actual from store
+    const ethAddress = wallets.ethereum.address;
+    const btcAddress = wallets.bitcoin.address;
 
     if (isLoading || !hasMore) return;
     setIsLoading(true);
@@ -123,7 +127,7 @@ const Transactions: React.FC = () => {
     <div className="space-y-6 pb-8">
       <Card className="md:p-6 p-2">
         <div className="flex flex-col md:flex-row gap-4 justify-between items-center mb-6">
-          <h2 className="text-xl font-bold">Transaction History</h2>
+          <h2 className="text-xl font-bold">{t("transactions.title")}</h2>
           <div className="flex flex-col md:flex-wrap lg:flex-row lg:items-center gap-3 md:w-4/6 w-full">
             {/* Search */}
             <div className="relative w-full md:max-w-md lg:w-64">
@@ -133,7 +137,7 @@ const Transactions: React.FC = () => {
               />
               <input
                 type="text"
-                placeholder="Search by token, hash, address"
+                placeholder={t("transactions.searchPlaceholder")}
                 className="input py-2 pl-9 pr-3 w-full"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
@@ -153,11 +157,11 @@ const Transactions: React.FC = () => {
                       dateRange.to,
                       "MMM d"
                     )}`
-                  : "Filter by date"}
+                  : t("transactions.filterByDate")}
               </Button>
 
               {showCalendar && (
-                <div className="absolute z-50 mt-2 w-full sm:w-[340px] bg-neutral-900 border border-neutral-700 rounded-xl shadow-lg p-4">
+                <div className="absolute z-50 mt-2 w-full sm:w-[340px] text-[rgb(var(--text))] bg-[rgb(var(--background-light))] border border-neutral-700 rounded-xl shadow-lg p-4">
                   <DayPicker
                     mode="range"
                     selected={dateRange}
@@ -173,25 +177,25 @@ const Transactions: React.FC = () => {
                             setShowCalendar(false);
                           }}
                         >
-                          Clear
+                          {t("common.clear")}
                         </Button>
                         <Button
                           size="sm"
                           onClick={() => setShowCalendar(false)}
                         >
-                          Done
+                          {t("common.done")}
                         </Button>
                       </div>
                     }
                     styles={{
-                      caption: { color: "white" },
+                      caption: { color: theme === "dark" ? "black" : "white" },
                       day_selected: {
                         backgroundColor: "#3b82f6",
-                        color: "white",
+                        color: theme === "dark" ? "black" : "white",
                       },
                       day_range_middle: {
                         backgroundColor: "#2563eb",
-                        color: "white",
+                        color: theme === "dark" ? "black" : "white",
                       },
                       day: { margin: "0.2rem" },
                     }}
@@ -210,7 +214,9 @@ const Transactions: React.FC = () => {
                   className="w-full capitalize"
                   onClick={() => setFilter(type as any)}
                 >
-                  {type === "zero-transfer" ? "Swap" : type}
+                  {type === "zero-transfer"
+                    ? t("transactions.swap")
+                    : t(`transactions.${type}`)}
                 </Button>
               ))}
             </div>
@@ -239,7 +245,7 @@ const Transactions: React.FC = () => {
               return (
                 <div
                   key={tx.hash + idx}
-                  className="flex flex-col md:flex-row md:items-center justify-between p-4 hover:bg-neutral-800/30 rounded-lg transition-all duration-200 border border-transparent hover:border-neutral-700"
+                  className="flex flex-col md:flex-row md:items-center justify-between p-4 rounded-lg transition-all duration-200 border border-transparent hover:border-neutral-700"
                 >
                   <div className="flex items-center mb-2 md:mb-0">
                     <div
@@ -255,12 +261,12 @@ const Transactions: React.FC = () => {
                     </div>
                     <div className="ml-3">
                       <div className="flex items-center">
-                        <p className="font-medium">
+                        <p className="font-medium text-[rgb(var(--text))]">
                           {tx.transactionSubtype === "zero-transfer"
-                            ? "Swap"
+                            ? t("transactions.swap")
                             : isReceive
-                            ? "Received"
-                            : "Sent"}{" "}
+                            ? t("transactions.received")
+                            : t("transactions.sent")}{" "}
                           {tx.tokenAddress
                             ? formatAddress(tx.tokenAddress, 4, 4)
                             : "ETH"}
@@ -275,7 +281,7 @@ const Transactions: React.FC = () => {
                               : "bg-error/20 text-error"
                           }`}
                         >
-                          {tx.status}
+                          {t(`transactions.status.${tx.status}`)}
                         </span>
                       </div>
                       <p className="text-xs text-neutral-400">
@@ -300,6 +306,7 @@ const Transactions: React.FC = () => {
                           target="_blank"
                           rel="noopener noreferrer"
                           className="ml-2 text-primary hover:text-primary-light"
+                          aria-label={t("transactions.viewOnExplorer")}
                         >
                           <ExternalLink size={12} />
                         </a>
@@ -313,15 +320,13 @@ const Transactions: React.FC = () => {
           </div>
         ) : !isLoading ? (
           <div className="text-center py-10 text-neutral-400 animate-fade-in">
-            <p className="text-lg">No transactions found</p>
-            <p className="text-sm mt-1">
-              Try adjusting your filters or search query.
-            </p>
+            <p className="text-lg">{t("transactions.noTransactions")}</p>
+            <p className="text-sm mt-1">{t("transactions.adjustFilters")}</p>
           </div>
         ) : (
           <div className="text-center py-10 text-neutral-400 animate-fade-in">
-            <p className="text-lg">Now Loading Transactions</p>
-            <p className="text-sm mt-1">Please wait for a moment.</p>
+            <p className="text-lg">{t("transactions.loading")}</p>
+            <p className="text-sm mt-1">{t("transactions.pleaseWait")}</p>
           </div>
         )}
       </Card>

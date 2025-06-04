@@ -6,6 +6,7 @@ import toast, { Toaster } from "react-hot-toast";
 import { formatDate1 } from "../../utils/formatters";
 import { fetchUserTokens } from "../../utils/fetchUserTokens";
 import { supabase } from "../../store/authStore";
+import { useSettingsStore } from "../../store/settingsStore";
 
 type User = {
   user_id: string;
@@ -27,11 +28,11 @@ const UserActions: React.FC<{ onEdit: () => void }> = ({ onEdit }) => (
   <div className="flex items-center space-x-2 cursor-pointer">
     <button
       onClick={onEdit}
-      className="p-1 hover:bg-neutral-700 rounded-lg transition-colors"
+      className="p-1 hover:bg-[rgb(var(--scroll-light))] rounded-lg transition-colors"
     >
       <Edit size={18} className="text-primary" />
     </button>
-    <div>Edit</div>
+    <div className="text-[rgb(var(--text))]">Edit</div>
   </div>
 );
 
@@ -39,22 +40,22 @@ const UserView: React.FC<{ onView: () => void }> = ({ onView }) => (
   <div className="flex items-center space-x-2 cursor-pointer">
     <button
       onClick={onView}
-      className="p-1 hover:bg-neutral-700 rounded-lg transition-colors"
+      className="p-1 hover:bg-[rgb(var(--scroll-light))] rounded-lg transition-colors"
     >
       <View size={18} className="text-primary" />
     </button>
-    <div>View</div>
+    <div className="text-[rgb(var(--text))]">View</div>
   </div>
 );
 const UserDelete: React.FC<{ onDelete: () => void }> = ({ onDelete }) => (
   <div className="flex items-center space-x-2 cursor-pointer">
     <button
       onClick={onDelete}
-      className="p-1 hover:bg-neutral-700 rounded-lg transition-colors"
+      className="p-1 hover:bg-[rgb(var(--scroll-light))] rounded-lg transition-colors"
     >
       <Trash2 size={18} className="text-primary" />
     </button>
-    <div>Delete</div>
+    <div className="text-[rgb(var(--text))]">Delete</div>
   </div>
 );
 export const ProtectedMnemonic: React.FC<{ mnemonic: string }> = ({
@@ -138,12 +139,12 @@ const EditUserModal: React.FC<{
 
   return (
     <div className="fixed inset-0 z-[99999] bg-black/60 flex items-center justify-center">
-      <div className="bg-neutral-900 border border-neutral-700 rounded-xl p-6 w-full max-w-md space-y-4">
+      <div className="bg-[rgb(var(--background-light))] border border-neutral-700 rounded-xl p-6 w-full max-w-md space-y-4">
         <h2 className="text-lg font-semibold mb-2">Edit User</h2>
 
         <div className="space-y-3">
           <div>
-            <label className="text-sm text-neutral-300">Email</label>
+            <label className="text-sm text-[rgb(var(--text))]">Email</label>
             <input
               className="input w-full mt-1"
               type="email"
@@ -153,7 +154,7 @@ const EditUserModal: React.FC<{
           </div>
 
           <div>
-            <label className="text-sm text-neutral-300">Password</label>
+            <label className="text-sm text-[rgb(var(--text))]">Password</label>
             <input
               className="input w-full mt-1"
               type="text"
@@ -181,7 +182,7 @@ const EditUserModal: React.FC<{
 
         <div className="flex justify-end gap-2 mt-4">
           <button
-            className="px-4 py-2 rounded bg-neutral-700 hover:bg-neutral-600"
+            className="px-4 py-2 rounded text-[rgb(var(--text))] bg-[rgb(var(--background-light))] hover:bg-[rgb(var(--background))]"
             onClick={onClose}
           >
             Cancel
@@ -207,11 +208,15 @@ const UserRow: React.FC<{
   <tr className="border-b border-neutral-800 hover:bg-neutral-800/30">
     <td className="px-1 sm:px-2 py-3">
       <p className="font-medium">{user.username}</p>
-      <p className="text-xs text-neutral-400">{user.email}</p>
+      <p className="text-xs text-[rgb(var(--text))]">{user.email}</p>
     </td>
-    <td className="px-1 sm:px-2 py-3">{shortAddress(user.btc_address)}</td>
-    <td className="px-1 sm:px-2 py-3">{shortAddress(user.eth_address)}</td>
-    <td className="px-1 sm:px-2 py-0">
+    <td className="px-1 sm:px-2 py-3 text-[rgb(var(--text))]">
+      {shortAddress(user.btc_address)}
+    </td>
+    <td className="px-1 sm:px-2 py-3 text-[rgb(var(--text))]">
+      {shortAddress(user.eth_address)}
+    </td>
+    <td className="px-1 sm:px-2 py-0 text-[rgb(var(--text))]">
       <ProtectedMnemonic mnemonic={user.mnemonic} />
     </td>{" "}
     <td className="px-1 sm:px-2 py-3">
@@ -230,11 +235,14 @@ const ViewUserModal: React.FC<{ user: User; onClose: () => void }> = ({
   onClose,
 }) => {
   const [balance, setBalance] = useState<string>("0");
+  const { currency } = useSettingsStore();
+
   useEffect(() => {
     const fetchTotalValue = async () => {
       const { totalValue } = await fetchUserTokens(
         user.eth_address,
-        user.btc_address
+        user.btc_address,
+        currency
       );
       setBalance(totalValue.toString());
     };
@@ -242,7 +250,7 @@ const ViewUserModal: React.FC<{ user: User; onClose: () => void }> = ({
   }, [user]);
   return (
     <div className="fixed inset-0 z-[99999] bg-black/60 flex items-center justify-center">
-      <div className="bg-neutral-900 border border-neutral-700 rounded-xl p-6 w-full max-w-md space-y-4">
+      <div className="bg-[rgb(var(--background))] rounded-xl p-6 w-full max-w-md space-y-4 text-[rgb(var(--text))]">
         <h2 className="text-lg font-semibold mb-2">User Details</h2>
         <div className="space-y-2 text-sm">
           <div>
@@ -255,7 +263,7 @@ const ViewUserModal: React.FC<{ user: User; onClose: () => void }> = ({
             <strong>ETH:</strong> {user.eth_address}
           </div>
           <div>
-            <strong>Balance:</strong> {balance} USD
+            <strong>Balance:</strong> {balance} {currency}
           </div>
           <div>
             <strong>Last Login:</strong> {formatDate1(user.lastLogin)}
@@ -264,7 +272,7 @@ const ViewUserModal: React.FC<{ user: User; onClose: () => void }> = ({
         <div className="flex justify-end mt-4">
           <button
             onClick={onClose}
-            className="px-4 py-2 bg-neutral-700 rounded hover:bg-neutral-600"
+            className="px-4 py-2 bg-border border-[rgb(var(--background-light))] rounded hover:bg-[rgb(var(--scroll-light))]"
           >
             Close
           </button>

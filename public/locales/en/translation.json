@@ -72,7 +72,9 @@
     "cancel": "Cancel",
     "confirm": "Confirm",
     "save": "Save",
-    "close": "Close"
+    "close": "Close",
+    "clear": "Clear",
+    "done": "Done"
   },
   "balanceCard": {
     "balance": {
@@ -143,8 +145,8 @@
     }
   },
   "recipientAddress": {
-    "label": "Recipient Address ({network})",
-    "placeholder": "Enter {network} address",
+    "label": "Recipient Address",
+    "placeholder": "Enter address",
     "invalidEthereum": "Invalid Ethereum address",
     "invalidBitcoin": "Invalid Bitcoin address",
     "scanButton": "Scan QR code",
@@ -152,5 +154,123 @@
     "cameraDenied": "Camera access denied. Please allow it.",
     "noCamera": "No camera found on this device.",
     "cameraError": "Unable to access the camera."
+  },
+  "swap": {
+    "title": "Swap Tokens",
+    "from": "From",
+    "to": "To",
+    "balance": "Balance",
+    "switchTokens": "Switch tokens",
+    "settings": "Settings",
+    "slippageTolerance": "Slippage Tolerance",
+    "custom": "Custom",
+    "loading": "Loading",
+    "approve": "Approve",
+    "swap": "Swap",
+    "loadingTokens": "Loading tokens",
+    "success": "✅ Swap successful",
+    "errors": {
+      "connectWallet": "Connect your wallet first.",
+      "insufficientBalance": "You don't have enough balance to perform this swap.",
+      "invalidQuote": "Invalid quote received.",
+      "permit2Failed": "Permit2 signing failed",
+      "insufficientEth": "Not enough ETH to cover swap and gas fees.",
+      "failed": "❌ Swap failed on-chain",
+      "generic": "Swap failed. Please try again."
+    }
+  },
+  "transactions": {
+    "title": "Transaction History",
+    "searchPlaceholder": "Search by token, hash, address",
+    "filterByDate": "Filter by date",
+    "all": "All",
+    "send": "Send",
+    "received": "Received",
+    "sent": "Sent",
+    "receive": "Receive",
+    "swap": "Swap",
+    "noTransactions": "No transactions found",
+    "adjustFilters": "Try adjusting your filters or search query.",
+    "loading": "Now Loading Transactions",
+    "pleaseWait": "Please wait for a moment.",
+    "status": {
+      "confirmed": "confirmed",
+      "pending": "pending",
+      "failed": "failed"
+    },
+    "viewOnExplorer": "View on explorer"
+  },
+  "ticket": {
+    "createTitle": "Create Support Ticket",
+    "category": "Category",
+    "selectCategory": "Select a category",
+    "priority": "Priority",
+    "priorities": {
+      "low": "Low",
+      "medium": "Medium",
+      "high": "High",
+      "urgent": "Urgent"
+    },
+    "subject": "Subject",
+    "subjectPlaceholder": "Brief description of your issue",
+    "description": "Description",
+    "descriptionPlaceholder": "Detailed explanation of your issue...",
+    "createButton": "Create Ticket"
+  },
+  "support": {
+    "title": "Support",
+    "newTicket": "New Ticket",
+    "yourTickets": "Your Tickets",
+    "conversation": "Conversation",
+    "typeMessagePlaceholder": "Type your message or Drag & drop your image",
+    "selectTicketToView": "Select a ticket to view the conversation"
+  },
+  "sidebar": {
+    "dashboard": "Dashboard",
+    "sendReceive": "Send & Receive",
+    "swap": "Swap",
+    "transactions": "Transactions",
+    "support": "Support",
+    "settings": "Settings"
+  },
+  "navbar": {
+    "logout": "Logout",
+    "dashboard": "Dashboard"
+  },
+  "auth": {
+    "email": "Email Address",
+    "emailPlaceholder": "Enter your email",
+    "password": "Password",
+    "passwordPlaceholder": "Enter your password",
+    "showPassword": "Show password",
+    "hidePassword": "Hide password",
+    "login": {
+      "title": "Welcome Back!",
+      "subtitle": "Sign in to access your wallet",
+      "button": "Sign In",
+      "switchToRegister": "Don't have an account? Sign Up"
+    },
+    "register": {
+      "title": "Create Account",
+      "subtitle": "Register to create your wallet",
+      "button": "Create Account",
+      "switchToLogin": "Already have an account? Sign In"
+    },
+    "2fa": {
+      "title": "Two-Factor Authentication",
+      "description": "Enter the code from your authenticator app",
+      "placeholder": "000000",
+      "verify": "Verify"
+    },
+    "mnemonic": {
+      "title": "Wallet Created!",
+      "description": "Please save your recovery phrase in a secure location. You'll need it to recover your wallet.",
+      "warning": "Never share your recovery phrase with anyone. Store it securely offline.",
+      "continue": "Continue to Wallet"
+    },
+    "errors": {
+      "generic": "An error occurred",
+      "invalid2FA": "Invalid 2FA code"
+    }
   }
 }

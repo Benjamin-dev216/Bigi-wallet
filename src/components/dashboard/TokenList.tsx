@@ -43,7 +43,8 @@ const TokenList: React.FC = () => {
       try {
         const fetched = await fetchUserTokens(
           wallets.ethereum.address,
-          wallets.bitcoin.address
+          wallets.bitcoin.address,
+          currency
         );
 
         const requiredTokens: Token[] = [

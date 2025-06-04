@@ -91,7 +91,7 @@ const ReplyModal: React.FC<ReplyModalProps> = ({
     >
       <div className="space-y-4">
         {ticketContent && (
-          <div className="p-3 rounded-md bg-neutral-800 border border-neutral-700 text-sm text-neutral-300 whitespace-pre-wrap">
+          <div className="p-3 rounded-md bg-[rgb(var(--background-light))] border border-neutral-700 text-sm text-[rgb(var(--text))] whitespace-pre-wrap">
             {ticketContent}
           </div>
         )}
@@ -102,7 +102,7 @@ const ReplyModal: React.FC<ReplyModalProps> = ({
             rows={6}
             value={message}
             onChange={(e) => setMessage(e.target.value)}
-            className="w-full p-3 rounded-md bg-neutral-800 border border-neutral-700 text-sm text-white resize-none focus:outline-none focus:ring-2 focus:ring-primary"
+            className="w-full p-3 rounded-md bg-[rgb(var(--background-light))] border border-neutral-700 text-sm text-[rgb(var(--text))] resize-none focus:outline-none focus:ring-2 focus:ring-primary"
           />
         </div>
 
@@ -127,7 +127,7 @@ const ReplyModal: React.FC<ReplyModalProps> = ({
             <input {...getInputProps()} />
             <button
               type="button"
-              className="px-3 py-2 bg-neutral-700 hover:bg-neutral-600 text-white rounded-lg transition-colors"
+              className="px-3 py-2 bg-[rgb(var(--background))] hover:bg-[rgb(var(--background-light))] text-[rgb(var(--text))] rounded-lg transition-colors"
             >
               <ImageIcon size={20} />
             </button>
@@ -136,7 +136,7 @@ const ReplyModal: React.FC<ReplyModalProps> = ({
           <div className="flex space-x-2">
             <button
               onClick={onClose}
-              className="px-4 py-2 rounded-md bg-neutral-700 hover:bg-neutral-600 text-sm"
+              className="px-4 py-2 rounded-md bg-[rgb(var(--background))] hover:bg-[rgb(var(--background-light))] text-sm text-[rgb(var(--text))]"
             >
               Cancel
             </button>

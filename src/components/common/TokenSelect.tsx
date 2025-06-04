@@ -8,14 +8,6 @@ interface TokenSelectProps {
   onChange: (token: any) => void;
 }
 
-// const ethToken = {
-//   address: "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee", // Placeholder for ETH
-//   name: "Ethereum",
-//   symbol: "ETH",
-//   decimals: 18,
-//   balance: "0",
-// };
-
 export const TokenSelect = ({
   tokens,
   selectedToken,
@@ -67,7 +59,7 @@ export const TokenSelect = ({
         <input
           ref={inputRef}
           type="text"
-          className="input w-full pr-20 bg-slate-800 text-white placeholder-gray-400 border border-slate-600 focus:ring-1 focus:ring-slate-500"
+          className="input w-full pr-20 bg-[rgb(var(--background-light))] text-[rgb(var(--text))] placeholder-gray-400 border border-slate-600 focus:ring-1 focus:ring-slate-500"
           placeholder={
             selectedToken
               ? `${selectedToken.name} (${selectedToken.symbol})`
@@ -93,15 +85,15 @@ export const TokenSelect = ({
       </div>
 
       {isOpen && (
-        <ul className="absolute z-10 mt-1 w-full max-h-60 overflow-auto rounded-md bg-slate-800 shadow-lg border border-slate-600">
+        <ul className="absolute z-10 mt-1 w-full max-h-60 overflow-auto rounded-md bg-[rgb(var(--background-light))] shadow-lg border border-slate-600">
           {filteredTokens.map((token, idx) => (
             <li
               key={idx}
               onClick={() => handleSelect(token)}
-              className="flex items-center px-3 py-2 cursor-pointer hover:bg-slate-700"
+              className="flex items-center px-3 py-2 cursor-pointer hover:bg-[rgb(var(--background))]"
             >
               <TokenIcon logo={token.logoURI} symbol={token.symbol} size="sm" />
-              <span className="ml-2 text-sm text-white">
+              <span className="ml-2 text-sm text-[rgb(var(--text))]">
                 {token.name} ({token.symbol})
               </span>
             </li>

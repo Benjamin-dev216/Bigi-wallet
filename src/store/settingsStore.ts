@@ -25,6 +25,14 @@ export const useSettingsStore = create<SettingsState>()(
     }),
     {
       name: "settings-store",
+      onRehydrateStorage: () => (state) => {
+        if (state?.theme) {
+          document.documentElement.classList.toggle(
+            "light",
+            state.theme === "light"
+          );
+        }
+      },
     }
   )
 );

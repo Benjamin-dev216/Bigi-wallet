@@ -72,7 +72,7 @@ const AdminDashboard: React.FC = () => {
                         : "text-error"
                     }`}
                   >
-                    {stat.change} from last week
+                    {stat.change} % from last week
                   </p>
                 </div>
                 <Icon className="text-primary" size={24} />
@@ -93,7 +93,9 @@ const AdminDashboard: React.FC = () => {
                 className="flex items-center justify-between py-2 border-b border-neutral-800"
               >
                 <div>
-                  <p className="font-medium">{ticket.subject}</p>
+                  <p className="font-medium text-[rgb(var(--text))]">
+                    {ticket.subject}
+                  </p>
                   <p className="text-sm text-neutral-400">
                     User ID: {shortAddress(ticket.user_id)}
                   </p>

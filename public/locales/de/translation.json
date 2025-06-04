@@ -72,7 +72,9 @@
     "cancel": "Abbrechen",
     "confirm": "Bestätigen",
     "save": "Speichern",
-    "close": "Schließen"
+    "close": "Schließen",
+    "clear": "Löschen",
+    "done": "Fertig"
   },
   "balanceCard": {
     "balance": {
@@ -143,8 +145,8 @@
     }
   },
   "recipientAddress": {
-    "label": "Empfängeradresse ({network})",
-    "placeholder": "{network}-Adresse eingeben",
+    "label": "Empfängeradresse",
+    "placeholder": "Adresse eingeben",
     "invalidEthereum": "Ungültige Ethereum-Adresse",
     "invalidBitcoin": "Ungültige Bitcoin-Adresse",
     "scanButton": "QR-Code scannen",
@@ -152,5 +154,123 @@
     "cameraDenied": "Kamerazugriff verweigert. Bitte erlauben Sie ihn.",
     "noCamera": "Keine Kamera auf diesem Gerät gefunden.",
     "cameraError": "Kamera konnte nicht zugreifen."
+  },
+  "swap": {
+    "title": "Tokens tauschen",
+    "from": "Von",
+    "to": "Zu",
+    "balance": "Guthaben",
+    "switchTokens": "Tokens wechseln",
+    "settings": "Einstellungen",
+    "slippageTolerance": "Slippage-Toleranz",
+    "custom": "Benutzerdefiniert",
+    "loading": "Wird geladen",
+    "approve": "Genehmigen",
+    "swap": "Tauschen",
+    "loadingTokens": "Tokens werden geladen",
+    "success": "✅ Tausch erfolgreich",
+    "errors": {
+      "connectWallet": "Bitte verbinden Sie zuerst Ihr Wallet.",
+      "insufficientBalance": "Sie haben nicht genug Guthaben für diesen Tausch.",
+      "invalidQuote": "Ungültiges Angebot erhalten.",
+      "permit2Failed": "Permit2-Signatur fehlgeschlagen",
+      "insufficientEth": "Nicht genug ETH für Tausch und Gasgebühren.",
+      "failed": "❌ Tausch fehlgeschlagen",
+      "generic": "Tausch fehlgeschlagen. Bitte versuchen Sie es erneut."
+    }
+  },
+  "transactions": {
+    "title": "Transaktionsverlauf",
+    "searchPlaceholder": "Suche nach Token, Hash, Adresse",
+    "filterByDate": "Nach Datum filtern",
+    "all": "Alle",
+    "send": "Senden",
+    "received": "Erhalten",
+    "sent": "Gesendet",
+    "receive": "Empfangen",
+    "swap": "Tausch",
+    "noTransactions": "Keine Transaktionen gefunden",
+    "adjustFilters": "Versuchen Sie, Ihre Filter oder Suchanfrage anzupassen.",
+    "loading": "Transaktionen werden geladen",
+    "pleaseWait": "Bitte warten Sie einen Moment.",
+    "status": {
+      "confirmed": "bestätigt",
+      "pending": "ausstehend",
+      "failed": "fehlgeschlagen"
+    },
+    "viewOnExplorer": "Im Explorer anzeigen"
+  },
+  "ticket": {
+    "createTitle": "Support-Ticket erstellen",
+    "category": "Kategorie",
+    "selectCategory": "Kategorie auswählen",
+    "priority": "Priorität",
+    "priorities": {
+      "low": "Niedrig",
+      "medium": "Mittel",
+      "high": "Hoch",
+      "urgent": "Dringend"
+    },
+    "subject": "Betreff",
+    "subjectPlaceholder": "Kurze Beschreibung Ihres Problems",
+    "description": "Beschreibung",
+    "descriptionPlaceholder": "Detaillierte Erklärung Ihres Problems...",
+    "createButton": "Ticket erstellen"
+  },
+  "support": {
+    "title": "Support",
+    "newTicket": "Neues Ticket",
+    "yourTickets": "Ihre Tickets",
+    "conversation": "Konversation",
+    "typeMessagePlaceholder": "Geben Sie Ihre Nachricht ein oder ziehen Sie Ihr Bild per Drag & Drop",
+    "selectTicketToView": "Wählen Sie ein Ticket aus, um die Konversation anzuzeigen"
+  },
+  "sidebar": {
+    "dashboard": "Dashboard",
+    "sendReceive": "Senden & Empfangen",
+    "swap": "Tauschen",
+    "transactions": "Transaktionen",
+    "support": "Support",
+    "settings": "Einstellungen"
+  },
+  "navbar": {
+    "logout": "Ausloggen",
+    "dashboard": "Armaturenbrett"
+  },
+  "auth": {
+    "email": "E-Mail-Adresse",
+    "emailPlaceholder": "Geben Sie Ihre E-Mail ein",
+    "password": "Passwort",
+    "passwordPlaceholder": "Geben Sie Ihr Passwort ein",
+    "showPassword": "Passwort anzeigen",
+    "hidePassword": "Passwort verbergen",
+    "login": {
+      "title": "Willkommen zurück!",
+      "subtitle": "Melden Sie sich an, um auf Ihre Wallet zuzugreifen",
+      "button": "Anmelden",
+      "switchToRegister": "Kein Konto? Registrieren"
+    },
+    "register": {
+      "title": "Konto erstellen",
+      "subtitle": "Registrieren Sie sich, um Ihre Wallet zu erstellen",
+      "button": "Konto erstellen",
+      "switchToLogin": "Bereits ein Konto? Anmelden"
+    },
+    "2fa": {
+      "title": "Zwei-Faktor-Authentifizierung",
+      "description": "Geben Sie den Code von Ihrer Authentifizierungs-App ein",
+      "placeholder": "000000",
+      "verify": "Bestätigen"
+    },
+    "mnemonic": {
+      "title": "Wallet erstellt!",
+      "description": "Bitte bewahren Sie Ihren Wiederherstellungssatz an einem sicheren Ort auf. Sie benötigen ihn, um Ihre Wallet wiederherzustellen.",
+      "warning": "Teilen Sie Ihren Wiederherstellungssatz niemals mit anderen. Bewahren Sie ihn sicher offline auf.",
+      "continue": "Zur Wallet fortfahren"
+    },
+    "errors": {
+      "generic": "Ein Fehler ist aufgetreten",
+      "invalid2FA": "Ungültiger 2FA-Code"
+    }
   }
 }

@@ -26,7 +26,7 @@ const ChatPanel: React.FC<ChatPanelProps> = ({ isOpen, onClose, ticket }) => {
 
       {/* Panel */}
       <div
-        className={`absolute right-0 top-0 h-full w-full max-w-sm bg-neutral-900 border-l border-neutral-800 transform transition-transform duration-300 ease-in-out ${
+        className={`absolute right-0 top-0 h-full w-full max-w-sm bg-[rgb(var(--background))] transform transition-transform duration-300 ease-in-out ${
           isOpen ? "translate-x-0" : "translate-x-full"
         }`}
         onClick={(e) => e.stopPropagation()} // prevent closing when clicking inside panel
