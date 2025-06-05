@@ -31,7 +31,7 @@ const Dashboard: React.FC = () => {
           </div>
 
           {/* Price Chart - Full width on mobile, 2/3 on XL */}
-          <div className="xl:col-span-2">
+          <div>
             <PriceChart />
           </div>
         </div>

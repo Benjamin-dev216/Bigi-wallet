@@ -70,15 +70,12 @@ const RecentTransactions: React.FC = () => {
       {transactions.length > 0 ? (
         // Scrollable container with max height
         <div className="space-y-3 max-h-[250px] overflow-y-auto pr-1">
-          {transactions.map((tx) => {
+          {transactions.map((tx, idx) => {
             const isReceive = tx.transactionSubtype === "incoming";
             const token = tx.chain === "ethereum-mainnet" ? "ETH" : "BTC";
 
             return (
-              <div
-                key={tx.hash}
-                className="flex items-center justify-between py-2"
-              >
+              <div key={idx} className="flex items-center justify-between py-2">
                 <div className="flex items-center">
                   <div
                     className={`p-2 rounded-full ${

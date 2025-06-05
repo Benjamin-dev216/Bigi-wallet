@@ -15,7 +15,7 @@ const PriceChart: React.FC = () => {
   return (
     <Card
       variant="glass"
-      className="w-full h-[500px] p-4 md:px-4 px-1 animate-slide-up"
+      className="w-full h-[350px] sm:h-[500px] p-4 md:px-4 px-1 animate-slide-up"
     >
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-lg font-medium">{t("priceChart.title")}</h2>
@@ -43,7 +43,7 @@ const PriceChart: React.FC = () => {
         </a>
       </div>
 
-      <div className="h-[400px]">
+      <div>
         <TradingViewWidget symbol={selectedToken.symbol} />
       </div>
     </Card>

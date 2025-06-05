@@ -48,7 +48,8 @@ const TradingViewWidget = ({ symbol = "BTCUSD" }: { symbol?: string }) => {
     <div
       id="tradingview-chart"
       ref={containerRef}
-      style={{ height: 400, backgroundColor: "#1e293b" }}
+      style={{ backgroundColor: "#1e293b" }}
+      className="h-[250px] sm:h-[400px]"
     />
   );
 };
