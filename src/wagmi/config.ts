@@ -21,7 +21,5 @@ export const config = createConfig(
 
     // Optional App Info
     appDescription: "A simple wallet for Ethereum & Bitcoin",
-    appUrl: "https://bigiwallet.space/", // your app's url
-    appIcon: "https://family.co/logo.png", // your app's icon, no bigger than 1024x1024px (max. 1MB)
   })
 );

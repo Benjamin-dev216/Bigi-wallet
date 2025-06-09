@@ -28,6 +28,8 @@ const SendReceive: React.FC = () => {
   const [network, setNetwork] = useState<"ethereum" | "bitcoin">("ethereum");
   const [feeLevel, setFeeLevel] = useState<FeeLevel>("Medium");
   const [fees, setFees] = useState<Record<string, string | number>>({});
+  const [inputInFiat, setInputInFiat] = useState(false); // false = crypto, true = fiat
+  const [fiatInput, setFiatInput] = useState(""); // string for fiat input
 
   const { currency } = useSettingsStore();
   const { t } = useTranslation();
@@ -143,7 +145,11 @@ const SendReceive: React.FC = () => {
   }, [wallets?.bitcoin.address]);
 
   useEffect(() => {
-    if (!toSendToken?.id || toSendToken.id.startsWith("0x")) {
+    if (
+      !toSendToken?.id ||
+      toSendToken.id.startsWith("0x") ||
+      toSendToken.symbol !== "BTC"
+    ) {
       setNetwork("ethereum");
     } else {
       setNetwork("bitcoin");
@@ -236,20 +242,63 @@ const SendReceive: React.FC = () => {
 
               {/* Input + Token */}
               <div className="relative">
-                <input
-                  type="number"
-                  placeholder="0.0"
-                  className="input w-full pr-20 appearance-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                  value={amount}
-                  min={0}
-                  onChange={(e) => setAmount(e.target.value)}
-                />
-                <div className="absolute inset-y-0 right-0 flex items-center pr-3">
+                <div className="relative">
+                  <input
+                    type="number"
+                    inputMode="decimal"
+                    placeholder="0.0"
+                    className="input w-full pr-20 appearance-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                    value={inputInFiat ? fiatInput : amount}
+                    onChange={(e) => {
+                      const val = e.target.value;
+
+                      if (!toSendToken) return;
+
+                      if (inputInFiat) {
+                        // Update fiat string input
+                        setFiatInput(val);
+
+                        // Convert and store in crypto
+                        const parsed = parseFloat(val);
+                        if (!isNaN(parsed)) {
+                          setAmount((parsed / toSendToken.price).toString());
+                        }
+                      } else {
+                        // Crypto mode
+                        setAmount(val);
+                      }
+                    }}
+                  />
+                </div>
+
+                <div
+                  className="absolute inset-y-0 right-0 flex items-center pr-3 cursor-pointer hover:opacity-80 transition-opacity"
+                  onClick={() => {
+                    setInputInFiat(!inputInFiat);
+                    if (!inputInFiat && toSendToken) {
+                      // Switching TO fiat mode — compute fiat input display
+                      const fiat =
+                        parseFloat(amount || "0") * toSendToken.price;
+                      setFiatInput(fiat ? fiat.toFixed(2) : "");
+                    }
+                    setAmount("");
+                  }}
+                  title={`Switch to ${
+                    inputInFiat ? toSendToken?.symbol : currency.toUpperCase()
+                  }`}
+                >
                   {toSendToken && (
-                    <div className="flex items-center">
-                      <span className="text-neutral-400 mr-2">
-                        {toSendToken.symbol}
+                    <div className="flex items-center space-x-1 text-sm text-neutral-400">
+                      {/* Currency Label */}
+                      {/* 2-way Arrow Icon */}
+                      <span className="text-lg">⇄</span>
+                      <span>
+                        {inputInFiat
+                          ? currency.toUpperCase()
+                          : toSendToken.symbol}
                       </span>
+
+                      {/* Token Icon */}
                       <TokenIcon symbol={toSendToken.symbol} size="sm" />
                     </div>
                   )}

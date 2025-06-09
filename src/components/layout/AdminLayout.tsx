@@ -108,6 +108,8 @@ export default AdminLayout;
 
 const Navbar: React.FC = () => {
   const navigate = useNavigate();
+  const { logout } = useAuthStore();
+  const { resetTicket } = useTicketStore();
 
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   return (
@@ -121,6 +123,19 @@ const Navbar: React.FC = () => {
           >
             <Menu size={24} />
           </button>
+          <div className="flex items-center space-x-1 md:space-x-3 inline sm:hidden">
+            {/* Lock Wallet Button */}
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                resetTicket();
+                logout();
+              }}
+            >
+              <LogOut size={16} className="mr-1" />
+            </Button>
+          </div>
         </div>
       </div>
 
