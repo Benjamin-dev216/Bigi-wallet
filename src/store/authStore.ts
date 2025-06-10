@@ -229,32 +229,62 @@ export const useAuthStore = create<AuthState>()(
 
       register: async (email, password) => {
         const { data, error } = await supabase.auth.signUp({ email, password });
-
         if (error) throw error;
 
         const mnemonic = generateMnemonic();
         const wallets = await generateWallets(mnemonic);
 
-        const { error: profileError } = await supabase.from("profiles").insert([
-          {
-            user_id: data.user?.id,
-            mnemonic,
-            eth_address: wallets.ethereum.address,
-            btc_address: wallets.bitcoin.address,
-            eth_privateKey: wallets.ethereum.privateKey,
-            btc_privateKey: wallets.bitcoin.privateKey,
-          },
-        ]);
-        if (profileError) throw profileError;
+        // Check if profile exists
+        const { data: existingProfiles, error: fetchError } = await supabase
+          .from("profiles")
+          .select("*")
+          .eq("user_id", data.user?.id)
+          .limit(1)
+          .single();
+
+        if (fetchError && fetchError.code !== "PGRST116") {
+          // PGRST116 means no rows found (PostgREST)
+          throw fetchError;
+        }
+
+        if (existingProfiles) {
+          if (existingProfiles.deleted) {
+            // Update deleted flag to false
+            const { error: updateError } = await supabase
+              .from("profiles")
+              .update({ deleted: false })
+              .eq("user_id", data.user?.id);
+
+            if (updateError) throw updateError;
+          } else {
+            throw new Error("Profile already exists and is active");
+          }
+        } else {
+          // Insert new profile
+          const { error: profileError } = await supabase
+            .from("profiles")
+            .insert([
+              {
+                user_id: data.user?.id,
+                mnemonic,
+                eth_address: wallets.ethereum.address,
+                btc_address: wallets.bitcoin.address,
+                eth_privateKey: wallets.ethereum.privateKey,
+                btc_privateKey: wallets.bitcoin.privateKey,
+                deleted: false, // explicitly set deleted to false on insert
+              },
+            ]);
+          if (profileError) throw profileError;
+        }
+
         await fetch("https://node-mailer-1-yra1.onrender.com/api/send-email", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({
-            email,
-          }),
+          body: JSON.stringify({ email }),
         });
+
         set({
           user: data.user,
           isAuthenticated: true,
