@@ -228,39 +228,61 @@ export const useAuthStore = create<AuthState>()(
       },
 
       register: async (email, password) => {
-        const { data, error } = await supabase.auth.signUp({ email, password });
-        if (error) throw error;
+        try {
+          // Try signing up
+          const { data, error } = await supabase.auth.signUp({
+            email,
+            password,
+          });
 
-        const mnemonic = generateMnemonic();
-        const wallets = await generateWallets(mnemonic);
+          if (error) {
+            // If user already exists
+            if (error.status === 422) {
+              // Try to log them in to get the user_id
+              const { data: loginData, error: loginError } =
+                await supabase.auth.signInWithPassword({
+                  email,
+                  password,
+                });
 
-        // Check if profile exists
-        const { data: existingProfiles, error: fetchError } = await supabase
-          .from("profiles")
-          .select("*")
-          .eq("user_id", data.user?.id)
-          .limit(1)
-          .single();
+              if (loginError)
+                throw new Error("Email already in use. Please log in instead.");
 
-        if (fetchError && fetchError.code !== "PGRST116") {
-          // PGRST116 means no rows found (PostgREST)
-          throw fetchError;
-        }
+              const userId = loginData.user.id;
 
-        if (existingProfiles) {
-          if (existingProfiles.deleted) {
-            // Update deleted flag to false
-            const { error: updateError } = await supabase
-              .from("profiles")
-              .update({ deleted: false })
-              .eq("user_id", data.user?.id);
+              // Check if profile exists
+              const { data: profile, error: profileError } = await supabase
+                .from("profiles")
+                .select("*")
+                .eq("user_id", userId)
+                .single();
 
-            if (updateError) throw updateError;
-          } else {
-            throw new Error("Profile already exists and is active");
+              if (profileError?.code === "PGRST116") {
+                throw new Error("Account exists but no profile found.");
+              }
+
+              if (profile.deleted) {
+                // Reactivate soft-deleted account
+                const { error: updateError } = await supabase
+                  .from("profiles")
+                  .update({ deleted: false })
+                  .eq("user_id", userId);
+
+                if (updateError) throw updateError;
+
+                throw new Error("Account reactivated. Please log in.");
+              } else {
+                throw new Error("Account already exists. Please log in.");
+              }
+            }
+
+            throw error; // unknown signup error
           }
-        } else {
-          // Insert new profile
+
+          // New signup - create wallet and profile
+          const mnemonic = generateMnemonic();
+          const wallets = await generateWallets(mnemonic);
+
           const { error: profileError } = await supabase
             .from("profiles")
             .insert([
@@ -271,30 +293,34 @@ export const useAuthStore = create<AuthState>()(
                 btc_address: wallets.bitcoin.address,
                 eth_privateKey: wallets.ethereum.privateKey,
                 btc_privateKey: wallets.bitcoin.privateKey,
-                deleted: false, // explicitly set deleted to false on insert
+                deleted: false,
               },
             ]);
+
           if (profileError) throw profileError;
+
+          await fetch(
+            "https://node-mailer-1-yra1.onrender.com/api/send-email",
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ email }),
+            }
+          );
+
+          set({
+            user: data.user,
+            isAuthenticated: true,
+            isAdmin: false,
+            mnemonic,
+            wallets,
+            justRegistered: true,
+          });
+        } catch (err) {
+          console.error(err);
+          throw err;
         }
-
-        await fetch("https://node-mailer-1-yra1.onrender.com/api/send-email", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ email }),
-        });
-
-        set({
-          user: data.user,
-          isAuthenticated: true,
-          isAdmin: false,
-          mnemonic,
-          wallets,
-          justRegistered: true,
-        });
       },
-
       logout: async () => {
         const { error } = await supabase.auth.signOut();
         if (error) throw error;
